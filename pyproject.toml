@@ -3,7 +3,7 @@ name = "omega-invasion"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Ian Salazar",email = "isalazarjara@gmail.com"}
+    {name = "Ian Salazar Jara",email = "isalazarjara@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.14"
