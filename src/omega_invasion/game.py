@@ -1,3 +1,4 @@
+from omega_invasion.entities.player import Jugador
 import pygame
 from omega_invasion import settings
 
@@ -14,21 +15,33 @@ class Juego:
         self.reloj = pygame.time.Clock()
         self.en_ejecucion = False
 
+        # Instanciar grupo de sprites
+        self.todos_los_sprites = pygame.sprite.Group()
+        # Instanciar jugador centrado abajo (velocidad = 7 pixeles por frame)
+        self.jugador = Jugador(settings.ANCHO_PANTALLA // 2, settings.ALTO_PANTALLA - 80, velocidad=7)
+        # Agregar jugador al grupo de sprites
+        self.todos_los_sprites.add(self.jugador)
+
+
     def manejar_eventos(self) -> None:
         """Procesa la cola de eventos de Pygame."""
         for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                self.en_ejecucion = False
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
-                self.en_ejecucion = False
+            match evento.type:
+                case pygame.QUIT:
+                    self.en_ejecucion = False
+                case pygame.KEYDOWN:
+                    match evento.key:
+                        case pygame.K_ESCAPE:
+                            self.en_ejecucion = False
 
     def actualizar(self) -> None:
         """Actualiza el estado y la lógica de las entidades del juego."""
-        pass
+        self.jugador.update()
 
     def dibujar(self) -> None:
         """Renderiza los elementos gráficos en la pantalla."""
         self.pantalla.fill(settings.COLOR_FONDO)
+        self.todos_los_sprites.draw(self.pantalla)
         pygame.display.flip()
 
     def ejecutar(self) -> None:
