@@ -56,3 +56,22 @@ def test_nodriza_enemiga_atributos_y_disparo():
     # Al forzar cadencia debe disparar doble bala
     nodriza.update()
     assert len(grupo_balas) >= 2
+
+
+def test_enemigos_sprites_pixel_art():
+    """Verifica que los tres enemigos usen sus respectivos sprites pixel art."""
+    grupo_balas = pygame.sprite.Group()
+    grupo_sprites = pygame.sprite.Group()
+
+    dron = DronEnemigo(100, 100, 3.0, grupo_balas, grupo_sprites)
+    cazador = CazadorEnemigo(100, 100, 3.0, None, grupo_balas, grupo_sprites)
+    nodriza = NodrizaEnemiga(100, 100, 2.0, grupo_balas, grupo_sprites)
+
+    assert dron.image.get_size() == (36, 36)
+    assert cazador.image.get_size() == (38, 38)
+    assert nodriza.image.get_size() == (56, 42)
+    # Verificar que no sean superficies vacías
+    assert any(dron.image.get_at((18, y))[3] > 0 for y in range(36))
+    assert any(cazador.image.get_at((19, y))[3] > 0 for y in range(38))
+    assert any(nodriza.image.get_at((28, y))[3] > 0 for y in range(42))
+

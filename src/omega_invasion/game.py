@@ -2,6 +2,7 @@ from omega_invasion.scenes.upgrade_menu import MenuMejoras
 from omega_invasion.scenes.game_over_menu import MenuGameOver
 from omega_invasion.entities.player import Jugador
 from omega_invasion.entities.enemy import DronEnemigo, CazadorEnemigo, NodrizaEnemiga
+from omega_invasion.utils.assets import reproducir_sonido
 
 import random
 import pygame
@@ -125,10 +126,12 @@ class Juego:
         for enemigo, balas in impactos.items(): # Recorre los enemigos impactados
             for bala in balas: # Recorre las balas que impactaron al enemigo
                 if enemigo.recibir_dano(bala.dano): # El enemigo recibe daño
+                    reproducir_sonido("explosion", volumen=0.25)
                     # Si el enemigo murió, le da experiencia al jugador
                     if self.jugador.ganar_exp(enemigo.exp_otorgada):
-                        # Abre el menú de mejoras y congela el juego
-                        self.menu_mejoras.abrir()
+                        reproducir_sonido("subir_nivel")
+                        # Abre el menú de mejoras y congela el juego si hay mejoras disponibles
+                        self.menu_mejoras.abrir(self.jugador)
                         print(f"¡Subiste al nivel {self.jugador.nivel}!")
 
         # Balas enemigas impactan al jugador

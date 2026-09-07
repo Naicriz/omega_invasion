@@ -91,17 +91,61 @@ def test_jugador_disparar_crea_balas():
 
 
 def test_jugador_disparo_omni():
-    """Verifica que el cañón omni dispare 8 proyectiles adicionales."""
+    """Verifica que el cañón omni empiece con 2 direcciones e incremente de 2 en 2 hasta 8."""
     grupo_sprites = pygame.sprite.Group()
     grupo_balas = pygame.sprite.Group()
     jugador = Jugador(200, 300, 7, grupo_balas, grupo_sprites)
-    jugador.nivel_canon_omni = 1
-    # Forzar fin de enfriamiento
-    jugador.ultimo_disparo = -10000
 
+    # Nivel 1: 1 frontal + 2 omni = 3 balas
+    jugador.nivel_canon_omni = 1
+    jugador.ultimo_disparo = -10000
     jugador.disparar(grupo_balas)
-    # 1 bala frontal + 8 balas omnidireccionales = 9 balas
+    assert len(grupo_balas) == 3
+
+    # Nivel 2: 1 frontal + 4 omni = 5 balas
+    grupo_balas.empty()
+    jugador.nivel_canon_omni = 2
+    jugador.ultimo_disparo = -10000
+    jugador.disparar(grupo_balas)
+    assert len(grupo_balas) == 5
+
+    # Nivel 3: 1 frontal + 6 omni = 7 balas
+    grupo_balas.empty()
+    jugador.nivel_canon_omni = 3
+    jugador.ultimo_disparo = -10000
+    jugador.disparar(grupo_balas)
+    assert len(grupo_balas) == 7
+
+    # Nivel 4: 1 frontal + 8 omni = 9 balas
+    grupo_balas.empty()
+    jugador.nivel_canon_omni = 4
+    jugador.ultimo_disparo = -10000
+    jugador.disparar(grupo_balas)
     assert len(grupo_balas) == 9
+
+
+def test_jugador_limite_mejoras():
+    """Verifica la consulta de niveles y si una mejora puede seguir aplicándose."""
+    grupo_balas = pygame.sprite.Group()
+    jugador = Jugador(200, 300, 7, grupo_balas)
+
+    # Cañón inicia en 1, máx 4
+    assert jugador.nivel_de_mejora("canon") == 1
+    assert jugador.puede_mejorar("canon", 4) is True
+
+    jugador.aplicar_mejora("canon")  # 2
+    jugador.aplicar_mejora("canon")  # 3
+    jugador.aplicar_mejora("canon")  # 4
+    assert jugador.nivel_de_mejora("canon") == 4
+    assert jugador.puede_mejorar("canon", 4) is False
+
+    # Omni inicia en 0, máx 4
+    assert jugador.nivel_de_mejora("canon_omni") == 0
+    assert jugador.puede_mejorar("canon_omni", 4) is True
+    for _ in range(4):
+        jugador.aplicar_mejora("canon_omni")
+    assert jugador.nivel_de_mejora("canon_omni") == 4
+    assert jugador.puede_mejorar("canon_omni", 4) is False
 
 
 def test_jugador_destruir_elimina_propulsor():
@@ -118,3 +162,52 @@ def test_jugador_destruir_elimina_propulsor():
 
     assert not jugador.alive()
     assert not propulsor.alive()
+
+
+def test_jugador_escudo_absorbe_dano():
+    """Verifica que el escudo activo absorba el daño sin restar puntos de vida (HP)."""
+    grupo_balas = pygame.sprite.Group()
+    jugador = Jugador(200, 300, 7, grupo_balas)
+
+    jugador.escudo_max = 2
+    jugador.escudo_actual = 2
+    hp_inicial = jugador.hp
+
+    # Primer golpe: lo absorbe el escudo
+    murio = jugador.recibir_dano(1)
+    assert murio is False
+    assert jugador.escudo_actual == 1
+    assert jugador.hp == hp_inicial
+
+    # Segundo golpe: se agota el escudo
+    murio = jugador.recibir_dano(1)
+    assert murio is False
+    assert jugador.escudo_actual == 0
+    assert jugador.hp == hp_inicial
+
+    # Tercer golpe: ya no hay escudo, resta vida
+    murio = jugador.recibir_dano(1)
+    assert murio is False
+    assert jugador.escudo_actual == 0
+    assert jugador.hp == hp_inicial - 1
+
+
+def test_jugador_escudo_visual():
+    """Verifica que la burbuja visual del escudo siga la nave y se elimine al morir."""
+    grupo_sprites = pygame.sprite.Group()
+    grupo_balas = pygame.sprite.Group()
+    jugador = Jugador(200, 300, 7, grupo_balas, grupo_sprites)
+    escudo_vis = jugador.escudo_visual
+
+    assert escudo_vis is not None
+    assert escudo_vis.rect.center == jugador.rect.center
+    assert escudo_vis in grupo_sprites
+
+    # Con escudo activo, update genera la burbuja gráfica
+    jugador.escudo_actual = 1
+    escudo_vis.update()
+    assert escudo_vis.image.get_width() > 0
+
+    # Al destruir la nave, el escudo visual también muere
+    jugador.destruir()
+    assert not escudo_vis.alive()

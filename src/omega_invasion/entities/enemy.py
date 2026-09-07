@@ -4,7 +4,7 @@ import random
 import pygame
 from omega_invasion.entities.base import NaveBase
 from omega_invasion.entities.bullet import Bala
-from omega_invasion.utils.assets import obtener_sprite
+from omega_invasion.utils.assets import obtener_sprite, reproducir_sonido
 
 
 
@@ -22,9 +22,8 @@ class DronEnemigo(NaveBase):
         self.frecuencia = random.uniform(0.03, 0.05)
         self.tiempo_vivo = random.uniform(0, 100)
 
-        # Gráfico: Triángulo rojo ágil
-        self.image = pygame.Surface((36, 36), pygame.SRCALPHA)
-        pygame.draw.polygon(self.image, pygame.Color("crimson"), [(18, 36), (0, 0), (18, 10), (36, 0)])
+        # Gráfico: Sprite pixel art de caza ágil
+        self.image = obtener_sprite("dron").copy()
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
 
     def update(self) -> None:
@@ -35,6 +34,7 @@ class DronEnemigo(NaveBase):
 
         # Disparo hacia abajo
         if self.puede_disparar():
+            reproducir_sonido("laser_enemigo", volumen=0.1)
             sprite_bala = obtener_sprite("bala_roja")
             Bala(self.rect.centerx, self.rect.bottom, 0.0, 6.0, 1, pygame.Color("tomato"), sprite_bala, self.grupo_balas, self.grupo_sprites)
 
@@ -53,9 +53,8 @@ class CazadorEnemigo(NaveBase):
         self.grupo_sprites = grupo_sprites
         self.exp_otorgada = 35
 
-        # Gráfico: Caza afilado de color violeta / fucsia
-        self.image = pygame.Surface((38, 38), pygame.SRCALPHA)
-        pygame.draw.polygon(self.image, pygame.Color("darkviolet"), [(19, 38), (0, 6), (19, 14), (38, 6)])
+        # Gráfico: Sprite pixel art de interceptor violeta
+        self.image = obtener_sprite("cazador").copy()
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
 
     def update(self) -> None:
@@ -71,6 +70,7 @@ class CazadorEnemigo(NaveBase):
 
         # Dispara proyectiles rápidos si está por encima del jugador
         if self.puede_disparar() and self.rect.bottom < self.jugador.rect.top:
+            reproducir_sonido("laser_enemigo", volumen=0.1)
             sprite_bala = obtener_sprite("bala_roja")
             Bala(self.rect.centerx, self.rect.bottom, 0.0, 8.0, 1, pygame.Color("magenta"), sprite_bala, self.grupo_balas, self.grupo_sprites)
 
@@ -88,10 +88,8 @@ class NodrizaEnemiga(NaveBase):
         self.grupo_sprites = grupo_sprites
         self.exp_otorgada = 75
 
-        # Gráfico: Nave acorazada más ancha y dorada/naranja
-        self.image = pygame.Surface((56, 42), pygame.SRCALPHA)
-        pygame.draw.polygon(self.image, pygame.Color("orange"), [(28, 42), (0, 12), (14, 0), (42, 0), (56, 12)])
-        pygame.draw.polygon(self.image, pygame.Color("gold"), [(28, 30), (14, 10), (42, 10)])  # Núcleo brillante
+        # Gráfico: Sprite pixel art de crucero acorazado
+        self.image = obtener_sprite("nodriza").copy()
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
 
     def update(self) -> None:
@@ -100,6 +98,7 @@ class NodrizaEnemiga(NaveBase):
 
         # Disparo doble simultáneo desde las alas
         if self.puede_disparar():
+            reproducir_sonido("laser_enemigo", volumen=0.12)
             sprite_bala = obtener_sprite("bala_roja")
             Bala(self.rect.left + 10, self.rect.bottom, 0.0, 6.5, 1, pygame.Color("darkorange"), sprite_bala, self.grupo_balas, self.grupo_sprites)
             Bala(self.rect.right - 10, self.rect.bottom, 0.0, 6.5, 1, pygame.Color("darkorange"), sprite_bala, self.grupo_balas, self.grupo_sprites)

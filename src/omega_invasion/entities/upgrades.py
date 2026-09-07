@@ -7,48 +7,55 @@ CATALOGO_MEJORAS = [
         "titulo": "Cañón Mejorado",
         "icono": "🔫",
         "desc": "+1 proyectil adicional por ráfaga",
-        "color": pygame.Color("cyan")
+        "color": pygame.Color("cyan"),
+        "nivel_max": 4
     },
     {
         "id": "canon_omni",
-        "titulo": "Cañón Omni (8 Direcciones)",
+        "titulo": "Cañón Omni",
         "icono": "⭐",
-        "desc": "Dispara proyectiles en todas las direcciones",
-        "color": pygame.Color("aquamarine")
+        "desc": "+2 direcciones de disparo omni (hasta 8)",
+        "color": pygame.Color("aquamarine"),
+        "nivel_max": 4
     },
     {
         "id": "cadencia",
         "titulo": "Sobrecarga",
         "icono": "⚡",
-        "desc": "+X% cadencia de disparo más rápida",
-        "color": pygame.Color("gold")
+        "desc": "+30% cadencia de disparo más rápida",
+        "color": pygame.Color("gold"),
+        "nivel_max": 5
     },
     {
         "id": "dano",
         "titulo": "Munición Mejorada",
         "icono": "💥",
         "desc": "+0.5 de daño a cada proyectil",
-        "color": pygame.Color("tomato")
+        "color": pygame.Color("tomato"),
+        "nivel_max": 5
     },
     {
         "id": "velocidad",
-        "titulo": "Propulsores Iónicos",
+        "titulo": "Propulsores",
         "icono": "🚀",
-        "desc": "+X% velocidad de movimiento",
-        "color": pygame.Color("springgreen")
+        "desc": "+0.6 velocidad de movimiento",
+        "color": pygame.Color("springgreen"),
+        "nivel_max": 5
     },
     {
         "id": "vida_max",
-        "titulo": "Refuerzo de Nave",
+        "titulo": "Refuerzo Nave",
         "icono": "❤️",
         "desc": "+1 vida máxima y repara 1 punto",
-        "color": pygame.Color("hotpink")
+        "color": pygame.Color("hotpink"),
+        "nivel_max": 5
     },
     {
         "id": "escudo",
         "titulo": "Escudo Protector",
         "icono": "🛡️",
-        "desc": "+1 escudo que absorbe daño gratis",
-        "color": pygame.Color("mediumpurple")
+        "desc": "+1 escudo que absorbe daño",
+        "color": pygame.Color("mediumpurple"),
+        "nivel_max": 3
     }
 ]

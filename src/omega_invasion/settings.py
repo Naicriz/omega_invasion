@@ -1,7 +1,7 @@
 import pygame
 
-SCREEN_WIDTH: int = 1280
-SCREEN_HEIGHT: int = 1280
+SCREEN_WIDTH: int = 800
+SCREEN_HEIGHT: int = 800
 FPS: int = 60
 BG_COLOR: pygame.Color = pygame.Color("gray8")
 

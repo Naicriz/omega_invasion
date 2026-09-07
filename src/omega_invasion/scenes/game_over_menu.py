@@ -1,5 +1,6 @@
 import pygame
 from omega_invasion import settings
+from omega_invasion.utils.assets import obtener_fuente, reproducir_sonido
 
 
 class MenuGameOver:
@@ -10,18 +11,18 @@ class MenuGameOver:
         self.nivel: int = 1
         self.tiempo_segundos: int = 0
 
-        self.fuente_titulo = pygame.font.SysFont("Arial", 40, bold=True)
-        self.fuente_stats = pygame.font.SysFont("Arial", 20)
-        self.fuente_boton = pygame.font.SysFont("Arial", 22, bold=True)
-        self.fuente_subtexto = pygame.font.SysFont("Arial", 14)
+        self.fuente_titulo = obtener_fuente(22)
+        self.fuente_stats = obtener_fuente(10)
+        self.fuente_boton = obtener_fuente(12)
+        self.fuente_subtexto = obtener_fuente(9)
 
-        ancho_btn = 280
+        ancho_btn = 320
         alto_btn = 60
         self.rect_reiniciar = pygame.Rect(0, 0, ancho_btn, alto_btn)
         self.rect_salir = pygame.Rect(0, 0, ancho_btn, alto_btn)
 
     def abrir(self, nivel: int = 1, tiempo_segundos: int = 0) -> None:
-        """Activa el menú y calcula la posición de sus elementos."""
+        """Activa el menú, calcula la posición de sus elementos y reproduce sonido de derrota."""
         self.nivel = nivel
         self.tiempo_segundos = tiempo_segundos
 
@@ -31,6 +32,7 @@ class MenuGameOver:
         self.rect_reiniciar.center = (cx, cy + 40)
         self.rect_salir.center = (cx, cy + 125)
         self.activo = True
+        reproducir_sonido("game_over")
 
     def manejar_evento(self, evento: pygame.event.Event) -> str | None:
         """Procesa entradas de ratón y teclado. Retorna 'reiniciar', 'salir' o None."""
