@@ -19,16 +19,17 @@ class Jugador(NaveBase):
         # --- Sistema de Niveles y Experiencia ---
         self.nivel = 1
         self.exp = 0
-        self.exp_siguiente_nivel = 100
+        self.exp_siguiente_nivel = 125
 
 
         # --- Niveles de Mejoras Permanentes ---
-        self.nivel_canon = 1        # 1: Simple, 2: Doble, 3: Triple, 4: Abanico cuádruple
-        self.nivel_cadencia = 1     # Reduce self.cadencia_ms
-        self.nivel_dano = 1         # Aumenta el daño de cada proyectil
-        self.nivel_velocidad = 1    # Aumenta self.vel
-        self.escudo_max = 0         # Escudos que absorben daño antes de perder HP
-        self.escudo_actual = 0
+        self.nivel_canon = 1            # 1: Simple, 2: Doble, 3: Triple, 4: Abanico cuádruple
+        self.nivel_canon_omni = 0       # 0: No equipado, 1: Equipado (8 direcciones)
+        self.nivel_cadencia = 1         # Reduce self.cadencia_ms
+        self.nivel_dano = 0.5           # Aumenta el daño de cada proyectil
+        self.nivel_velocidad = 1        # Aumenta self.vel
+        self.escudo_max = 0             # Escudos que absorben daño antes de perder HP
+        self.escudo_actual = 0          # Escudo actual
 
     def update(self):
         """Procesa las entradas y actualiza la posición del jugador."""
@@ -52,7 +53,7 @@ class Jugador(NaveBase):
         self.pos += direccion * self.vel # Actualizar la posición
         self.rect.center = (round(self.pos.x), round(self.pos.y)) # Actualizar la posición del rectángulo
     
-        # Límites para no salirse de la pantalla (1280 x 720)
+        # Límites para no salirse de la pantalla
         self.rect.clamp_ip(pygame.display.get_surface().get_rect()) # clamp_ip es para que no se salga de la pantalla
         self.pos = pygame.math.Vector2(self.rect.center) # Actualizar la posición del vector
 
@@ -76,6 +77,8 @@ class Jugador(NaveBase):
         match tipo_mejora:
             case "canon":
                 self.nivel_canon += 1  # Añade más balas por ráfaga
+            case "canon_omni":
+                self.nivel_canon_omni += 1 # Equipa el cañón omni
             case "cadencia":
                 self.nivel_cadencia += 1
                 # Reduce el cooldown en un 15% (con un límite de 70ms para no romper el juego)
@@ -98,17 +101,36 @@ class Jugador(NaveBase):
             return
         
         dano = self.nivel_dano # Daño base afectado por mejoras
+        grupo_global = self.groups()[0] 
 
+        # DISPARO FRONTAL VERTICAL (Básico + Mejoras de Ráfaga)
         match self.nivel_canon:
             case 1:  # 1 bala central
-                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
+                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
             case 2:  # 2 balas paralelas
-                Bala(self.rect.left + 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
-                Bala(self.rect.right - 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
-            case 3:  # 3 balas en abanico
-                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
-                Bala(self.rect.left, self.rect.top, -3.0, -11.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
-                Bala(self.rect.right, self.rect.top, 3.0, -11.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
+                Bala(self.rect.left + 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
+                Bala(self.rect.right - 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
             case _:  # Nivel 4 o superior: ráfaga de 5
-                for angulo_x in (-4.0, -2.0, 0.0, 2.0, 4.0):
-                    Bala(self.rect.centerx, self.rect.top, angulo_x, -11.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
+                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
+                Bala(self.rect.left + 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
+                Bala(self.rect.right - 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
+
+        # CAÑÓN OMNIDIRECCIONAL (Dispara en todas direcciones en 360°)
+        if self.nivel_canon_omni > 0:
+            vel_omni = 9.0
+            diag = 6.36  # 9 / sqrt(2) para que las diagonales tengan la misma velocidad
+            
+            # Las 8 direcciones cardinales y diagonales
+            direcciones = [
+                (0.0, -vel_omni),       # Arriba
+                (0.0, vel_omni),        # Abajo
+                (-vel_omni, 0.0),       # Izquierda
+                (vel_omni, 0.0),        # Derecha
+                (-diag, -diag),         # Diagonal arriba-izq
+                (diag, -diag),          # Diagonal arriba-der
+                (-diag, diag),          # Diagonal abajo-izq
+                (diag, diag)            # Diagonal abajo-der
+            ]
+            color_omni = (50, 255, 200)  # Verde esmeralda brillante
+            for vx, vy in direcciones:
+                Bala(self.rect.centerx, self.rect.centery, vx, vy, dano * 0.8, color_omni, grupo_balas, grupo_global)
