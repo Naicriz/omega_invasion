@@ -1,35 +1,32 @@
+from omega_invasion.settings import NVL_DANO, NVL_CADENCIA, NVL_CANON_OMNI, NVL_CANON, EXP_ACTUAL, NVL_ACTUAL, EXP_SIGUIENTE, ESCUDO_ACTUAL, ESCUDO_MAX, NVL_VELOCIDAD
 from omega_invasion.entities.bullet import Bala
 from omega_invasion.entities.base import NaveBase
+from omega_invasion.utils.assets import obtener_sprite
+
 import pygame
 
 
 class Jugador(NaveBase):
     def __init__(self, eje_x: float, eje_y: float, velocidad: float, grupo_balas: pygame.sprite.Group, *grupos: tuple):
-        # Inicia con 3 puntos de vida, la velocidad indicada y cadencia de 350ms.
-        super().__init__(eje_x, eje_y, 3, velocidad, 350, *grupos)
-        # grupo_balas: Grupo donde se guardaran las balas creadas por el jugador
-        self.grupo_balas = grupo_balas
-        # Cargar la imagen del jugador
-        self.image = pygame.Surface((40, 40), pygame.SRCALPHA)
-        # Dibujar la nave del jugador
-        pygame.draw.polygon(self.image, (0, 220, 255), [(20, 0), (40, 40), (20, 30), (0, 40)])
-        # Obtener el rectángulo de la nave
-        self.rect = self.image.get_rect(center=(eje_x, eje_y))
+        # Inicia con 5 puntos de vida, la velocidad indicada y cadencia de 400ms.
+        super().__init__(eje_x, eje_y, 5, velocidad, 400, *grupos)
+        self.grupo_balas = grupo_balas # Grupo donde se guardaran las balas creadas por el jugador
+        self.image = obtener_sprite("jugador") # Cargar la imagen del jugador
+        self.rect = self.image.get_rect(center=(eje_x, eje_y)) # Obtener el rectángulo de la nave
 
         # --- Sistema de Niveles y Experiencia ---
-        self.nivel = 1
-        self.exp = 0
-        self.exp_siguiente_nivel = 125
-
+        self.nivel = NVL_ACTUAL                     # Nivel actual del jugador
+        self.exp = EXP_ACTUAL                       # Experiencia actual del jugador
+        self.exp_siguiente_nivel = EXP_SIGUIENTE    # Experiencia necesaria para subir de nivel
 
         # --- Niveles de Mejoras Permanentes ---
-        self.nivel_canon = 1            # 1: Simple, 2: Doble, 3: Triple, 4: Abanico cuádruple
-        self.nivel_canon_omni = 0       # 0: No equipado, 1: Equipado (8 direcciones)
-        self.nivel_cadencia = 1         # Reduce self.cadencia_ms
-        self.nivel_dano = 0.5           # Aumenta el daño de cada proyectil
-        self.nivel_velocidad = 1        # Aumenta self.vel
-        self.escudo_max = 0             # Escudos que absorben daño antes de perder HP
-        self.escudo_actual = 0          # Escudo actual
+        self.nivel_canon = NVL_CANON                # 1: Simple, 2: Doble, 3: Triple
+        self.nivel_canon_omni = NVL_CANON_OMNI      # 0: No equipado, 1: Equipado (8 direcciones)
+        self.nivel_cadencia = NVL_CADENCIA          # Reduce self.cadencia_ms
+        self.nivel_dano = NVL_DANO                  # Aumenta el daño de cada proyectil
+        self.nivel_velocidad = NVL_VELOCIDAD        # Aumenta self.vel
+        self.escudo_max = ESCUDO_MAX                # Escudos que absorben daño antes de perder HP
+        self.escudo_actual = ESCUDO_ACTUAL          # Escudo actual
 
     def update(self):
         """Procesa las entradas y actualiza la posición del jugador."""
@@ -67,8 +64,8 @@ class Jugador(NaveBase):
         if self.exp >= self.exp_siguiente_nivel:
             self.exp -= self.exp_siguiente_nivel
             self.nivel += 1
-            # Cada nivel pide un 40% más de XP que el anterior
-            self.exp_siguiente_nivel = int(self.exp_siguiente_nivel * 1.4)
+            # Cada nivel pide un 50% más de XP que el anterior
+            self.exp_siguiente_nivel = int(self.exp_siguiente_nivel * 1.5)
             return True  # ¡Subió de nivel!
         return False
 
@@ -81,13 +78,13 @@ class Jugador(NaveBase):
                 self.nivel_canon_omni += 1 # Equipa el cañón omni
             case "cadencia":
                 self.nivel_cadencia += 1
-                # Reduce el cooldown en un 15% (con un límite de 70ms para no romper el juego)
-                self.cadencia_ms = max(70, int(self.cadencia_ms * 0.85))
+                # Reduce el cooldown de disparo (con un límite de 30ms para no romper el juego)
+                self.cadencia_ms = max(30, int(self.cadencia_ms * 0.70))
             case "dano":
                 self.nivel_dano += 1
             case "velocidad":
                 self.nivel_velocidad += 1
-                self.vel += 0.8  # +0.8 píxeles por frame permanentemente
+                self.vel += 0.6  # Aumenta en 0.6 px/frame permanentemente
             case "vida_max":
                 self.max_hp += 1
                 self.hp += 1     # Sube vida máxima y cura 1 punto
@@ -102,18 +99,25 @@ class Jugador(NaveBase):
         
         dano = self.nivel_dano # Daño base afectado por mejoras
         grupo_global = self.groups()[0] 
+        sprite_bala = obtener_sprite("bala_azul")
+        sprite_omni = obtener_sprite("bala_omni")
 
         # DISPARO FRONTAL VERTICAL (Básico + Mejoras de Ráfaga)
         match self.nivel_canon:
             case 1:  # 1 bala central
-                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
+                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
             case 2:  # 2 balas paralelas
-                Bala(self.rect.left + 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
-                Bala(self.rect.right - 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
-            case _:  # Nivel 4 o superior: ráfaga de 5
-                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
-                Bala(self.rect.left + 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
-                Bala(self.rect.right - 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, grupo_global)
+                Bala(self.rect.left + 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.right - 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+            case 3:  # Nivel 3: ráfaga de 3
+                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.left + 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.right - 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+            case _:  # Nivel 4 o superior: ráfaga de
+                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.left + 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.right - 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.centerx, self.rect.top - 6, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
 
         # CAÑÓN OMNIDIRECCIONAL (Dispara en todas direcciones en 360°)
         if self.nivel_canon_omni > 0:
@@ -131,6 +135,5 @@ class Jugador(NaveBase):
                 (-diag, diag),          # Diagonal abajo-izq
                 (diag, diag)            # Diagonal abajo-der
             ]
-            color_omni = (50, 255, 200)  # Verde esmeralda brillante
             for vx, vy in direcciones:
-                Bala(self.rect.centerx, self.rect.centery, vx, vy, dano * 0.8, color_omni, grupo_balas, grupo_global)
+                Bala(self.rect.centerx, self.rect.centery, vx, vy, dano * 0.8, (50, 255, 200), sprite_omni, grupo_balas, grupo_global)

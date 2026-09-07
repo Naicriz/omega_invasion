@@ -23,19 +23,13 @@ class Juego:
         self.todos_los_sprites = pygame.sprite.Group()
         self.balas_jugador = pygame.sprite.Group()
         self.balas_enemigos = pygame.sprite.Group()
-        # Instanciar enemigos
         self.enemigos = pygame.sprite.Group()
+
         self.tiempo_inicio_juego = pygame.time.get_ticks()
         self.ultimo_spawn_enemigo = 0
         self.intervalo_spawn_ms = 800
-
         # Instanciar jugador centrado abajo (velocidad = 7 pixeles por frame)
-        self.jugador = Jugador(settings.ANCHO_PANTALLA // 2, settings.ALTO_PANTALLA - 80, 7, self.balas_jugador)
-        # Agregar jugador al grupo de sprites
-        self.todos_los_sprites.add(self.jugador)
-        # self.todos_los_sprites.add(self.enemigos)
-        # self.todos_los_sprites.add(self.balas_jugador)
-        # self.todos_los_sprites.add(self.balas_enemigos)
+        self.jugador = Jugador(settings.ANCHO_PANTALLA // 2, settings.ALTO_PANTALLA - 80, 7, self.balas_jugador, self.todos_los_sprites)
 
         self.menu_mejoras = MenuMejoras()
 
@@ -91,6 +85,7 @@ class Juego:
 
         # Balas del jugador impactan balas enemigas
         pygame.sprite.groupcollide(self.balas_jugador, self.balas_enemigos, True, True) # Elimina ambas colisionadas
+
         # Balas del jugador impactan enemigos
         impactos = pygame.sprite.groupcollide(self.enemigos, self.balas_jugador, False, True) # groupcollide elimina la bala (True) y no al enemigo aún (False) para evaluar su vida
         for enemigo, balas in impactos.items(): # Recorre los enemigos impactados

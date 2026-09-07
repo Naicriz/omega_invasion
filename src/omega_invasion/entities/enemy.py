@@ -4,6 +4,8 @@ import random
 import pygame
 from omega_invasion.entities.base import NaveBase
 from omega_invasion.entities.bullet import Bala
+from omega_invasion.utils.assets import obtener_sprite
+
 
 
 class DronEnemigo(NaveBase):
@@ -33,7 +35,8 @@ class DronEnemigo(NaveBase):
 
         # Disparo hacia abajo
         if self.puede_disparar():
-            Bala(self.rect.centerx, self.rect.bottom, 0.0, 6.0, 1, (255, 80, 80), self.grupo_balas, self.grupo_sprites)
+            sprite_bala = obtener_sprite("bala_roja")
+            Bala(self.rect.centerx, self.rect.bottom, 0.0, 6.0, 1, (255, 80, 80), sprite_bala, self.grupo_balas, self.grupo_sprites)
 
         superficie = pygame.display.get_surface()
         if superficie and self.rect.top > superficie.get_height():
@@ -48,7 +51,7 @@ class CazadorEnemigo(NaveBase):
         self.jugador = jugador
         self.grupo_balas = grupo_balas
         self.grupo_sprites = grupo_sprites
-        self.exp_otorgada = 45
+        self.exp_otorgada = 35
 
         # Gráfico: Caza afilado de color violeta / fucsia
         self.image = pygame.Surface((38, 38), pygame.SRCALPHA)
@@ -59,16 +62,17 @@ class CazadorEnemigo(NaveBase):
         # Movimiento: desciende mientras persigue la coordenada X del jugador
         self.pos.y += self.vel
         if self.jugador and self.jugador.alive():
-            if self.pos.x < self.jugador.rect.centerx - 10:
-                self.pos.x += self.vel * 0.7
-            elif self.pos.x > self.jugador.rect.centerx + 10:
-                self.pos.x -= self.vel * 0.7
+            if self.pos.x < self.jugador.rect.centerx - 8:
+                self.pos.x += self.vel * 0.6
+            elif self.pos.x > self.jugador.rect.centerx + 8:
+                self.pos.x -= self.vel * 0.6
 
         self.rect.center = (round(self.pos.x), round(self.pos.y))
 
         # Dispara proyectiles rápidos si está por encima del jugador
         if self.puede_disparar() and self.rect.bottom < self.jugador.rect.top:
-            Bala(self.rect.centerx, self.rect.bottom, 0.0, 8.0, 1, (255, 50, 220), self.grupo_balas, self.grupo_sprites)
+            sprite_bala = obtener_sprite("bala_roja")
+            Bala(self.rect.centerx, self.rect.bottom, 0.0, 8.0, 1, (255, 50, 220), sprite_bala, self.grupo_balas, self.grupo_sprites)
 
         superficie = pygame.display.get_surface()
         if superficie and self.rect.top > superficie.get_height():
@@ -82,7 +86,7 @@ class NodrizaEnemiga(NaveBase):
         super().__init__(eje_x, eje_y, 6, velocidad * 0.5, 1400, *grupos)
         self.grupo_balas = grupo_balas
         self.grupo_sprites = grupo_sprites
-        self.exp_otorgada = 120
+        self.exp_otorgada = 75
 
         # Gráfico: Nave acorazada más ancha y dorada/naranja
         self.image = pygame.Surface((56, 42), pygame.SRCALPHA)
@@ -96,8 +100,9 @@ class NodrizaEnemiga(NaveBase):
 
         # Disparo doble simultáneo desde las alas
         if self.puede_disparar():
-            Bala(self.rect.left + 10, self.rect.bottom, 0.0, 6.5, 1, (255, 140, 0), self.grupo_balas, self.grupo_sprites)
-            Bala(self.rect.right - 10, self.rect.bottom, 0.0, 6.5, 1, (255, 140, 0), self.grupo_balas, self.grupo_sprites)
+            sprite_bala = obtener_sprite("bala_roja")
+            Bala(self.rect.left + 10, self.rect.bottom, 0.0, 6.5, 1, (255, 140, 0), sprite_bala, self.grupo_balas, self.grupo_sprites)
+            Bala(self.rect.right - 10, self.rect.bottom, 0.0, 6.5, 1, (255, 140, 0), sprite_bala, self.grupo_balas, self.grupo_sprites)
 
         superficie = pygame.display.get_surface()
         if superficie and self.rect.top > superficie.get_height():
