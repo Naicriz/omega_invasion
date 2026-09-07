@@ -174,7 +174,7 @@ class Jugador(NaveBase):
                 Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
                 Bala(self.rect.left + 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
                 Bala(self.rect.right - 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
-                Bala(self.rect.centerx, self.rect.top - 6, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.centerx, self.rect.top - 20, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
 
         # CAÑÓN OMNIDIRECCIONAL (Dispara en todas direcciones en 360°)
         if self.nivel_canon_omni > 0:
