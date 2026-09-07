@@ -8,10 +8,11 @@ RUTA_NAVES = RUTA_BASE / "ships"
 RUTA_HOJAS = RUTA_BASE / "ships"
 
 _SPRITES = {}
+_ANIMACIONES = {}
 
 def inicializar_assets() -> None:
-    """Carga y prepara todos los sprites en memoria."""
-    global _SPRITES
+    """Carga y prepara todos los sprites y animaciones en memoria."""
+    global _SPRITES, _ANIMACIONES
     if _SPRITES:
         return
 
@@ -43,8 +44,24 @@ def inicializar_assets() -> None:
         sub_rojo = hoja.subsurface((600, 0, 300, 500))
         _SPRITES["bala_roja"] = pygame.transform.scale(sub_rojo, (12, 22))
 
+    # 3. Cargar Animación del Propulsor (thruster.gif)
+    ruta_thruster = RUTA_NAVES / "thruster.gif"
+    if ruta_thruster.exists():
+        anim_raw = pygame.image.load_animation(str(ruta_thruster))
+        # Escala 3x (24x24) para alinear perfectamente con el ancho de la tobera de la nave
+        _ANIMACIONES["thruster"] = [
+            (pygame.transform.scale(surf, (24, 24)), dur)
+            for surf, dur in anim_raw
+        ]
+
 def obtener_sprite(clave: str) -> pygame.Surface:
     """Devuelve el sprite en caché."""
     if not _SPRITES:
         inicializar_assets()
     return _SPRITES[clave]
+
+def obtener_animacion(clave: str) -> list[tuple[pygame.Surface, float]]:
+    """Devuelve la lista de tuplas (superficie, duracion_ms) de una animación en caché."""
+    if not _SPRITES:
+        inicializar_assets()
+    return _ANIMACIONES.get(clave, [])

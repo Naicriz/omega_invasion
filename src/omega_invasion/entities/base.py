@@ -11,7 +11,7 @@ class NaveBase(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(eje_x, eje_y)    # Posición del jugador
         self.vel = velocidad                            # Velocidad del jugador
         self.cadencia_ms = cadencia_ms                  # Tiempo minimo en milisegundos entre disparos.
-        self.ultimo_disparo = 0                         # Tiempo del ultimo disparo.
+        self.ultimo_disparo = -cadencia_ms              # Permite disparar de inmediato al iniciar.
         
     def recibir_dano(self, cantidad: float) -> bool:
         """Resta vida. Devuelve True si la nave fue destruida."""

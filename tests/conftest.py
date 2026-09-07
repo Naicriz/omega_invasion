@@ -13,5 +13,6 @@ import pygame
 def inicializar_pygame():
     """Inicializa Pygame para la sesión de pruebas y lo limpia al finalizar."""
     pygame.init()
+    pygame.display.set_mode((100, 100))
     yield
     pygame.quit()

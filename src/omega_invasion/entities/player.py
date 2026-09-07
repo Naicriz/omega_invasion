@@ -1,18 +1,61 @@
 from omega_invasion.settings import NVL_DANO, NVL_CADENCIA, NVL_CANON_OMNI, NVL_CANON, EXP_ACTUAL, NVL_ACTUAL, EXP_SIGUIENTE, ESCUDO_ACTUAL, ESCUDO_MAX, NVL_VELOCIDAD
 from omega_invasion.entities.bullet import Bala
 from omega_invasion.entities.base import NaveBase
-from omega_invasion.utils.assets import obtener_sprite
+from omega_invasion.utils.assets import obtener_sprite, obtener_animacion
 
 import pygame
 
 
+class Propulsor(pygame.sprite.Sprite):
+    """Efecto visual del propulsor animado que se dibuja debajo de la nave."""
+
+    def __init__(self, nave: "Jugador", *grupos):
+        super().__init__(*grupos)
+        self.nave = nave
+        self.animacion = obtener_animacion("thruster")
+        self.indice_frame = 0
+        self.tiempo_ultimo_frame = pygame.time.get_ticks()
+
+        if self.animacion:
+            self.image = self.animacion[0][0]
+        else:
+            self.image = pygame.Surface((24, 24), pygame.SRCALPHA)
+
+        self.rect = self.image.get_rect()
+        self.actualizar_posicion()
+
+    def actualizar_posicion(self) -> None:
+        """Ubica el propulsor centrado justo debajo de la tobera de la nave."""
+        if self.nave and hasattr(self.nave, "rect"):
+            self.rect.midtop = (self.nave.rect.centerx, self.nave.rect.bottom - 4)
+
+    def update(self) -> None:
+        """Avanza los fotogramas del GIF respetando su temporización original."""
+        if not self.nave or not self.nave.alive():
+            self.kill()
+            return
+
+        if self.animacion:
+            ahora = pygame.time.get_ticks()
+            duracion_frame = self.animacion[self.indice_frame][1]
+            if ahora - self.tiempo_ultimo_frame >= duracion_frame:
+                self.tiempo_ultimo_frame = ahora
+                self.indice_frame = (self.indice_frame + 1) % len(self.animacion)
+                self.image = self.animacion[self.indice_frame][0]
+
+        self.actualizar_posicion()
+
+
 class Jugador(NaveBase):
     def __init__(self, eje_x: float, eje_y: float, velocidad: float, grupo_balas: pygame.sprite.Group, *grupos: tuple):
-        # Inicia con 5 puntos de vida, la velocidad indicada y cadencia de 400ms.
+        # 1. Instanciar el propulsor en los grupos primero para que se dibuje por debajo de la nave
+        self.propulsor = Propulsor(self, *grupos)
+        # 2. Inicia con 5 puntos de vida, la velocidad indicada y cadencia de 400ms.
         super().__init__(eje_x, eje_y, 5, velocidad, 400, *grupos)
         self.grupo_balas = grupo_balas # Grupo donde se guardaran las balas creadas por el jugador
         self.image = obtener_sprite("jugador") # Cargar la imagen del jugador
         self.rect = self.image.get_rect(center=(eje_x, eje_y)) # Obtener el rectángulo de la nave
+        self.propulsor.actualizar_posicion()
 
         # --- Sistema de Niveles y Experiencia ---
         self.nivel = NVL_ACTUAL                     # Nivel actual del jugador
@@ -54,9 +97,23 @@ class Jugador(NaveBase):
         self.rect.clamp_ip(pygame.display.get_surface().get_rect()) # clamp_ip es para que no se salga de la pantalla
         self.pos = pygame.math.Vector2(self.rect.center) # Actualizar la posición del vector
 
+        # Sincronizar posición del propulsor con el movimiento del jugador
+        if hasattr(self, "propulsor") and self.propulsor:
+            self.propulsor.actualizar_posicion()
+
         # Dispara cuando se mantiene presionado
         if teclas[pygame.K_SPACE]:
             self.disparar(self.grupo_balas)
+
+    def destruir(self) -> None:
+        if hasattr(self, "propulsor") and self.propulsor:
+            self.propulsor.kill()
+        super().destruir()
+
+    def kill(self) -> None:
+        if hasattr(self, "propulsor") and self.propulsor:
+            self.propulsor.kill()
+        super().kill()
 
     def ganar_exp(self, cantidad: int) -> bool:
         """Suma experiencia. Devuelve True si subió de nivel."""
