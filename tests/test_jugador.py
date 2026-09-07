@@ -211,3 +211,33 @@ def test_jugador_escudo_visual():
     # Al destruir la nave, el escudo visual también muere
     jugador.destruir()
     assert not escudo_vis.alive()
+
+
+def test_jugador_inclinacion_lateral_y_estela(monkeypatch):
+    """Verifica la inclinación lateral (banking) y la generación de partículas de estela."""
+    from collections import defaultdict
+    from omega_invasion.entities.effects import ParticulaEstela
+
+    pygame.display.set_mode((400, 400))
+    grupo_sprites = pygame.sprite.Group()
+    grupo_balas = pygame.sprite.Group()
+    jugador = Jugador(200, 200, 5, grupo_balas, grupo_sprites)
+
+    # Simular tecla izquierda presionada
+    teclas = defaultdict(bool)
+    teclas[pygame.K_LEFT] = True
+    monkeypatch.setattr(pygame.key, "get_pressed", lambda: teclas)
+
+    jugador.update()
+    assert jugador.angulo_inclinacion > 0  # Inclinación positiva (izquierda)
+
+    # Simular tecla derecha presionada
+    teclas.clear()
+    teclas[pygame.K_RIGHT] = True
+    for _ in range(5):
+        jugador.update()
+    assert jugador.angulo_inclinacion < 0  # Inclinación negativa (derecha)
+
+    # Comprobar que se hayan emitido partículas de estela en el grupo
+    particulas = [s for s in grupo_sprites if isinstance(s, ParticulaEstela)]
+    assert len(particulas) > 0

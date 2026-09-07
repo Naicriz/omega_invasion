@@ -2,6 +2,7 @@ from omega_invasion.scenes.upgrade_menu import MenuMejoras
 from omega_invasion.scenes.game_over_menu import MenuGameOver
 from omega_invasion.entities.player import Jugador
 from omega_invasion.entities.enemy import DronEnemigo, CazadorEnemigo, NodrizaEnemiga
+from omega_invasion.entities.effects import crear_explosion
 from omega_invasion.utils.assets import reproducir_sonido
 
 import random
@@ -30,6 +31,7 @@ class Juego:
         # Menús interactivos
         self.menu_mejoras = MenuMejoras()
         self.menu_game_over = MenuGameOver()
+        self.shake_intensidad = 0.0
 
         # Configurar partida inicial
         self.reiniciar()
@@ -44,6 +46,7 @@ class Juego:
         self.tiempo_inicio_juego = pygame.time.get_ticks()
         self.ultimo_spawn_enemigo = 0
         self.intervalo_spawn_ms = 800
+        self.shake_intensidad = 0.0
 
         # Instanciar jugador centrado abajo (velocidad = 7 px/frame)
         self.jugador = Jugador(
@@ -90,14 +93,28 @@ class Juego:
         if self.menu_mejoras.activo or self.menu_game_over.activo:
             return
 
+        # Reducción paulatina de la sacudida de pantalla
+        if self.shake_intensidad > 0:
+            self.shake_intensidad = max(0.0, self.shake_intensidad - 0.6)
+
         self.todos_los_sprites.update()
         self.spawn_enemigos()
         self.manejar_colisiones()
 
     def dibujar(self) -> None:
-        """Renderiza los elementos gráficos en la pantalla."""
+        """Renderiza los elementos gráficos en la pantalla con soporte para sacudida (screen shake)."""
         self.pantalla.fill(settings.COLOR_FONDO)
-        self.todos_los_sprites.draw(self.pantalla)
+
+        if self.shake_intensidad > 0.1:
+            max_offset = max(1, int(self.shake_intensidad))
+            offset_x = random.randint(-max_offset, max_offset)
+            offset_y = random.randint(-max_offset, max_offset)
+            surf_mundo = pygame.Surface((settings.ANCHO_PANTALLA, settings.ALTO_PANTALLA))
+            surf_mundo.fill(settings.COLOR_FONDO)
+            self.todos_los_sprites.draw(surf_mundo)
+            self.pantalla.blit(surf_mundo, (offset_x, offset_y))
+        else:
+            self.todos_los_sprites.draw(self.pantalla)
 
         if self.menu_mejoras.activo:
             self.menu_mejoras.dibujar(self.pantalla)
@@ -122,11 +139,26 @@ class Juego:
         pygame.sprite.groupcollide(self.balas_jugador, self.balas_enemigos, True, True) # Elimina ambas colisionadas
 
         # Balas del jugador impactan enemigos
-        impactos = pygame.sprite.groupcollide(self.enemigos, self.balas_jugador, False, True) # groupcollide elimina la bala (True) y no al enemigo aún (False) para evaluar su vida
-        for enemigo, balas in impactos.items(): # Recorre los enemigos impactados
-            for bala in balas: # Recorre las balas que impactaron al enemigo
-                if enemigo.recibir_dano(bala.dano): # El enemigo recibe daño
+        impactos = pygame.sprite.groupcollide(self.enemigos, self.balas_jugador, False, True)
+        for enemigo, balas in impactos.items():
+            for bala in balas:
+                if enemigo.recibir_dano(bala.dano):
                     reproducir_sonido("explosion", volumen=0.25)
+
+                    # Efecto visual de explosión con screen shake según el tipo de nave
+                    if isinstance(enemigo, DronEnemigo):
+                        tipo = "dron"
+                        shake = 3.5
+                    elif isinstance(enemigo, CazadorEnemigo):
+                        tipo = "cazador"
+                        shake = 4.5
+                    else:
+                        tipo = "nodriza"
+                        shake = 8.0
+
+                    crear_explosion(enemigo.rect.center, tipo, self.todos_los_sprites)
+                    self.shake_intensidad = max(self.shake_intensidad, shake)
+
                     # Si el enemigo murió, le da experiencia al jugador
                     if self.jugador.ganar_exp(enemigo.exp_otorgada):
                         reproducir_sonido("subir_nivel")
@@ -137,12 +169,20 @@ class Juego:
         # Balas enemigas impactan al jugador
         balas_impactadas = pygame.sprite.spritecollide(self.jugador, self.balas_enemigos, True)
         for _ in balas_impactadas:
-            self.jugador.recibir_dano(1)
+            if self.jugador.recibir_dano(1):
+                crear_explosion(self.jugador.rect.center, "jugador", self.todos_los_sprites)
+                self.shake_intensidad = 10.0
 
         # Choque directo cuerpo a cuerpo (Nave enemiga choca con el jugador)
         enemigos_chocados = pygame.sprite.spritecollide(self.jugador, self.enemigos, True)
-        for _ in enemigos_chocados:
-            self.jugador.recibir_dano(2)
+        for enemigo in enemigos_chocados:
+            tipo = "dron" if isinstance(enemigo, DronEnemigo) else ("cazador" if isinstance(enemigo, CazadorEnemigo) else "nodriza")
+            crear_explosion(enemigo.rect.center, tipo, self.todos_los_sprites)
+            self.shake_intensidad = max(self.shake_intensidad, 6.0)
+
+            if self.jugador.recibir_dano(2):
+                crear_explosion(self.jugador.rect.center, "jugador", self.todos_los_sprites)
+                self.shake_intensidad = 10.0
 
         # Si el jugador fue destruido, se abre el menú de fin de partida
         if not self.jugador.alive():

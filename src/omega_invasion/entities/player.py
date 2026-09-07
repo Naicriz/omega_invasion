@@ -1,9 +1,11 @@
 from omega_invasion.settings import NVL_DANO, NVL_CADENCIA, NVL_CANON_OMNI, NVL_CANON, EXP_ACTUAL, NVL_ACTUAL, EXP_SIGUIENTE, ESCUDO_ACTUAL, ESCUDO_MAX, NVL_VELOCIDAD
 from omega_invasion.entities.bullet import Bala
 from omega_invasion.entities.base import NaveBase
+from omega_invasion.entities.effects import ParticulaEstela
 from omega_invasion.utils.assets import obtener_sprite, obtener_animacion, reproducir_sonido
 
 import math
+import random
 import pygame
 
 
@@ -117,11 +119,16 @@ class Jugador(NaveBase):
         # 2. Inicia con 5 puntos de vida, la velocidad indicada y cadencia de 400ms.
         super().__init__(eje_x, eje_y, 5, velocidad, 400, *grupos)
         self.grupo_balas = grupo_balas # Grupo donde se guardaran las balas creadas por el jugador
-        self.image = obtener_sprite("jugador") # Cargar la imagen del jugador
+        self.image_base = obtener_sprite("jugador") # Sprite base sin rotar
+        self.image = self.image_base.copy()
         self.rect = self.image.get_rect(center=(eje_x, eje_y)) # Obtener el rectángulo de la nave
         self.propulsor.actualizar_posicion()
         # 3. Instanciar la burbuja visual del escudo en los grupos (se dibuja encima del chasis)
         self.escudo_visual = EscudoVisual(self, *grupos)
+
+        # --- Efectos visuales de movimiento ---
+        self.angulo_inclinacion = 0.0
+        self.contador_estela = 0
 
         # --- Sistema de Niveles y Experiencia ---
         self.nivel = NVL_ACTUAL                     # Nivel actual del jugador
@@ -139,7 +146,7 @@ class Jugador(NaveBase):
         self.escudo_actual = ESCUDO_ACTUAL          # Escudo actual
 
     def update(self):
-        """Procesa las entradas y actualiza la posición del jugador."""
+        """Procesa las entradas y actualiza la posición del jugador con efectos visuales."""
 
         teclas = pygame.key.get_pressed()
         direccion = pygame.math.Vector2()
@@ -161,8 +168,43 @@ class Jugador(NaveBase):
         self.rect.center = (round(self.pos.x), round(self.pos.y)) # Actualizar la posición del rectángulo
     
         # Límites para no salirse de la pantalla
-        self.rect.clamp_ip(pygame.display.get_surface().get_rect()) # clamp_ip es para que no se salga de la pantalla
-        self.pos = pygame.math.Vector2(self.rect.center) # Actualizar la posición del vector
+        superficie = pygame.display.get_surface()
+        if superficie:
+            self.rect.clamp_ip(superficie.get_rect())
+            self.pos = pygame.math.Vector2(self.rect.center)
+
+        # Efecto visual de inclinación lateral (Banking)
+        target_angulo = 0.0
+        if direccion.x < 0:
+            target_angulo = 12.0  # Se inclina a la izquierda
+        elif direccion.x > 0:
+            target_angulo = -12.0 # Se inclina a la derecha
+
+        self.angulo_inclinacion += (target_angulo - self.angulo_inclinacion) * 0.35
+        if abs(self.angulo_inclinacion) < 0.3:
+            self.angulo_inclinacion = 0.0
+
+        centro_prev = self.rect.center
+        if self.angulo_inclinacion != 0.0:
+            self.image = pygame.transform.rotate(self.image_base, self.angulo_inclinacion)
+        else:
+            self.image = self.image_base
+        self.rect = self.image.get_rect(center=centro_prev)
+
+        # Emisión de estela del motor de propulsión
+        self.contador_estela += 1
+        if self.contador_estela % 2 == 0 and self.groups():
+            grupo_sprites = self.groups()[0]
+            ParticulaEstela(
+                self.rect.centerx + random.uniform(-3, 3),
+                self.rect.bottom - 2,
+                pygame.Color("cyan"),
+                random.uniform(-0.4, 0.4),
+                random.uniform(2.5, 4.2),
+                12,
+                3,
+                grupo_sprites
+            )
 
         # Sincronizar posición del propulsor y escudo con el movimiento del jugador
         if hasattr(self, "propulsor") and self.propulsor:

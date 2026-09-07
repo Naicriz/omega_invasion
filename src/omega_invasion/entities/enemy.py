@@ -4,6 +4,7 @@ import random
 import pygame
 from omega_invasion.entities.base import NaveBase
 from omega_invasion.entities.bullet import Bala
+from omega_invasion.entities.effects import ParticulaEstela
 from omega_invasion.utils.assets import obtener_sprite, reproducir_sonido
 
 
@@ -21,16 +22,42 @@ class DronEnemigo(NaveBase):
         self.amplitud_oscilacion = random.randint(35, 75)
         self.frecuencia = random.uniform(0.03, 0.05)
         self.tiempo_vivo = random.uniform(0, 100)
+        self.contador_estela = random.randint(0, 3)
 
         # Gráfico: Sprite pixel art de caza ágil
-        self.image = obtener_sprite("dron").copy()
+        self.image_base = obtener_sprite("dron")
+        self.image = self.image_base.copy()
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
 
     def update(self) -> None:
         self.tiempo_vivo += 1
         self.pos.y += self.vel
         self.pos.x = self.centro_x + math.sin(self.tiempo_vivo * self.frecuencia) * self.amplitud_oscilacion
-        self.rect.center = (round(self.pos.x), round(self.pos.y))
+
+        # Inclinación visual según la dirección del vuelo en zigzag
+        vx = math.cos(self.tiempo_vivo * self.frecuencia) * self.amplitud_oscilacion * self.frecuencia
+        angulo_tilt = max(-14.0, min(14.0, -vx * 4.5))
+
+        centro_prev = (round(self.pos.x), round(self.pos.y))
+        if abs(angulo_tilt) > 1.0:
+            self.image = pygame.transform.rotate(self.image_base, angulo_tilt)
+        else:
+            self.image = self.image_base
+        self.rect = self.image.get_rect(center=centro_prev)
+
+        # Estela de propulsión de chispas
+        self.contador_estela += 1
+        if self.contador_estela % 3 == 0:
+            ParticulaEstela(
+                self.rect.centerx + random.uniform(-2, 2),
+                self.rect.top - 2,
+                pygame.Color("orangered"),
+                random.uniform(-0.3, 0.3),
+                -random.uniform(1.5, 3.0),
+                10,
+                3,
+                self.grupo_sprites
+            )
 
         # Disparo hacia abajo
         if self.puede_disparar():
@@ -52,21 +79,49 @@ class CazadorEnemigo(NaveBase):
         self.grupo_balas = grupo_balas
         self.grupo_sprites = grupo_sprites
         self.exp_otorgada = 35
+        self.angulo_inclinacion = 0.0
+        self.contador_estela = random.randint(0, 3)
 
         # Gráfico: Sprite pixel art de interceptor violeta
-        self.image = obtener_sprite("cazador").copy()
+        self.image_base = obtener_sprite("cazador")
+        self.image = self.image_base.copy()
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
 
     def update(self) -> None:
         # Movimiento: desciende mientras persigue la coordenada X del jugador
         self.pos.y += self.vel
+        target_tilt = 0.0
+
         if self.jugador and self.jugador.alive():
             if self.pos.x < self.jugador.rect.centerx - 8:
                 self.pos.x += self.vel * 0.6
+                target_tilt = -12.0  # Inclinación al perseguir hacia la derecha
             elif self.pos.x > self.jugador.rect.centerx + 8:
                 self.pos.x -= self.vel * 0.6
+                target_tilt = 12.0   # Inclinación al perseguir hacia la izquierda
 
-        self.rect.center = (round(self.pos.x), round(self.pos.y))
+        self.angulo_inclinacion += (target_tilt - self.angulo_inclinacion) * 0.25
+        centro_prev = (round(self.pos.x), round(self.pos.y))
+
+        if abs(self.angulo_inclinacion) > 1.0:
+            self.image = pygame.transform.rotate(self.image_base, self.angulo_inclinacion)
+        else:
+            self.image = self.image_base
+        self.rect = self.image.get_rect(center=centro_prev)
+
+        # Estela de plasma violeta/magenta
+        self.contador_estela += 1
+        if self.contador_estela % 3 == 0:
+            ParticulaEstela(
+                self.rect.centerx + random.uniform(-2, 2),
+                self.rect.top - 2,
+                pygame.Color("magenta"),
+                random.uniform(-0.3, 0.3),
+                -random.uniform(1.8, 3.2),
+                10,
+                3,
+                self.grupo_sprites
+            )
 
         # Dispara proyectiles rápidos si está por encima del jugador
         if self.puede_disparar() and self.rect.bottom < self.jugador.rect.top:
@@ -87,6 +142,7 @@ class NodrizaEnemiga(NaveBase):
         self.grupo_balas = grupo_balas
         self.grupo_sprites = grupo_sprites
         self.exp_otorgada = 75
+        self.contador_estela = 0
 
         # Gráfico: Sprite pixel art de crucero acorazado
         self.image = obtener_sprite("nodriza").copy()
@@ -95,6 +151,30 @@ class NodrizaEnemiga(NaveBase):
     def update(self) -> None:
         self.pos.y += self.vel
         self.rect.center = (round(self.pos.x), round(self.pos.y))
+
+        # Estela doble de motores pesados
+        self.contador_estela += 1
+        if self.contador_estela % 2 == 0:
+            ParticulaEstela(
+                self.rect.left + 8,
+                self.rect.top - 2,
+                pygame.Color("darkorange"),
+                random.uniform(-0.2, 0.2),
+                -random.uniform(1.2, 2.2),
+                12,
+                3,
+                self.grupo_sprites
+            )
+            ParticulaEstela(
+                self.rect.right - 8,
+                self.rect.top - 2,
+                pygame.Color("darkorange"),
+                random.uniform(-0.2, 0.2),
+                -random.uniform(1.2, 2.2),
+                12,
+                3,
+                self.grupo_sprites
+            )
 
         # Disparo doble simultáneo desde las alas
         if self.puede_disparar():
