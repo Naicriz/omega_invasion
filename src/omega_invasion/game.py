@@ -1,4 +1,6 @@
 from omega_invasion.entities.player import Jugador
+from omega_invasion.entities.EnemyBase import DronEnemigo
+import random
 import pygame
 from omega_invasion import settings
 
@@ -19,6 +21,10 @@ class Juego:
         self.todos_los_sprites = pygame.sprite.Group()
         self.balas_jugador = pygame.sprite.Group()
         self.balas_enemigos = pygame.sprite.Group()
+        # Instanciar enemigos
+        self.enemigos = pygame.sprite.Group()
+        self.ultimo_spawn_enemigo = 0
+        self.intervalo_spawn_ms = 800
 
         # Instanciar jugador centrado abajo (velocidad = 7 pixeles por frame)
         self.jugador = Jugador(settings.ANCHO_PANTALLA // 2, settings.ALTO_PANTALLA - 80, 7, self.balas_jugador)
@@ -39,6 +45,8 @@ class Juego:
     def actualizar(self) -> None:
         """Actualiza el estado y la lógica de las entidades del juego."""
         self.todos_los_sprites.update()
+        self.spawn_enemigos()
+        self.manejar_colisiones()
 
     def dibujar(self) -> None:
         """Renderiza los elementos gráficos en la pantalla."""
@@ -75,3 +83,11 @@ class Juego:
         enemigos_chocados = pygame.sprite.spritecollide(self.jugador, self.enemigos, True)
         for _ in enemigos_chocados:
             self.jugador.recibir_dano(2)
+
+    def spawn_enemigos(self) -> None:
+        ahora = pygame.time.get_ticks()
+        if ahora - self.ultimo_spawn_enemigo >= self.intervalo_spawn_ms:
+            self.ultimo_spawn_enemigo = ahora
+            x_azar = random.randint(60, settings.ANCHO_PANTALLA - 60)
+            # Creamos el dron arriba de la pantalla
+            DronEnemigo(x_azar, -40, 3.0, self.enemigos, self.todos_los_sprites)

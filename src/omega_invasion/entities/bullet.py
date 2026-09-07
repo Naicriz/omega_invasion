@@ -1,5 +1,5 @@
-
 import pygame
+
 
 class Bala(pygame.sprite.Sprite):
     def __init__(self, eje_x: float, eje_y: float, vel_x: float, vel_y: float, dano: float = 1, color: tuple = (0,255,255), *grupos):

@@ -1,5 +1,6 @@
 import pygame
 
+
 class NaveBase(pygame.sprite.Sprite):
     """Clase base para cualquier nave (Jugador O Enemigos.)"""
 
@@ -17,6 +18,7 @@ class NaveBase(pygame.sprite.Sprite):
         self.hp -= cantidad
         if self.hp <= 0:
             self.hp = 0
+            self.destruir()
             return True
         return False
 

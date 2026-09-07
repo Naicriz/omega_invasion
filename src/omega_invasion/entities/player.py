@@ -6,7 +6,7 @@ import pygame
 class Jugador(NaveBase):
     def __init__(self, eje_x: float, eje_y: float, velocidad: float, grupo_balas: pygame.sprite.Group, *grupos: tuple):
         # Inicia con 3 puntos de vida, la velocidad indicada y cadencia de 350ms.
-        super().__init__(eje_x, eje_y, hp=3, velocidad=velocidad, cadencia_ms=350, *grupos)
+        super().__init__(eje_x, eje_y, 3, velocidad, 350, *grupos)
         # grupo_balas: Grupo donde se guardaran las balas creadas por el jugador
         self.grupo_balas = grupo_balas
         # Cargar la imagen del jugador
