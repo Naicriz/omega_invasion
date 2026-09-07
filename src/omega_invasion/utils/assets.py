@@ -24,7 +24,7 @@ def inicializar_assets() -> None:
     else:
         # Fallback procedural si no encontrara la imagen
         surf = pygame.Surface((44, 44), pygame.SRCALPHA)
-        pygame.draw.polygon(surf, (0, 220, 255), [(22, 0), (44, 40), (22, 30), (0, 40)])
+        pygame.draw.polygon(surf, pygame.Color("deepskyblue"), [(22, 0), (44, 40), (22, 30), (0, 40)])
         _SPRITES["jugador"] = surf
 
     # 2. Cargar Proyectiles desde la hoja de proyectiles

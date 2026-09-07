@@ -1,12 +1,14 @@
+import pygame
+
 SCREEN_WIDTH: int = 1280
 SCREEN_HEIGHT: int = 1280
 FPS: int = 60
-BG_COLOR: tuple[int, int, int] = (24, 24, 24)
+BG_COLOR: pygame.Color = pygame.Color("gray9")
 
 # Constantes en español
 ANCHO_PANTALLA: int = SCREEN_WIDTH
 ALTO_PANTALLA: int = SCREEN_HEIGHT
-COLOR_FONDO = BG_COLOR
+COLOR_FONDO: pygame.Color = BG_COLOR
 
 # --- Stats iniciales ---
 HP_MAX: float = 5.0

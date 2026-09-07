@@ -28,7 +28,7 @@ class Juego:
         self.tiempo_inicio_juego = pygame.time.get_ticks()
         self.ultimo_spawn_enemigo = 0
         self.intervalo_spawn_ms = 800
-        # Instanciar jugador centrado abajo (velocidad = 7 pixeles por frame)
+        # Instanciar jugador centrado abajo (velocidad = 7 px/frame)
         self.jugador = Jugador(settings.ANCHO_PANTALLA // 2, settings.ALTO_PANTALLA - 80, 7, self.balas_jugador, self.todos_los_sprites)
 
         self.menu_mejoras = MenuMejoras()
@@ -36,7 +36,7 @@ class Juego:
     def manejar_eventos(self) -> None:
         """Procesa la cola de eventos de Pygame."""
         for evento in pygame.event.get():
-            # Si el menú de mejoras está activo, le pasamos los eventos a él
+            # Si el menú de mejoras está activo, se pasan los eventos a el.
             if self.menu_mejoras.activo:
                 mejora_elegida = self.menu_mejoras.manejar_evento(evento)
                 if mejora_elegida:

@@ -24,7 +24,7 @@ class DronEnemigo(NaveBase):
 
         # Gráfico: Triángulo rojo ágil
         self.image = pygame.Surface((36, 36), pygame.SRCALPHA)
-        pygame.draw.polygon(self.image, (255, 60, 60), [(18, 36), (0, 0), (18, 10), (36, 0)])
+        pygame.draw.polygon(self.image, pygame.Color("crimson"), [(18, 36), (0, 0), (18, 10), (36, 0)])
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
 
     def update(self) -> None:
@@ -36,7 +36,7 @@ class DronEnemigo(NaveBase):
         # Disparo hacia abajo
         if self.puede_disparar():
             sprite_bala = obtener_sprite("bala_roja")
-            Bala(self.rect.centerx, self.rect.bottom, 0.0, 6.0, 1, (255, 80, 80), sprite_bala, self.grupo_balas, self.grupo_sprites)
+            Bala(self.rect.centerx, self.rect.bottom, 0.0, 6.0, 1, pygame.Color("tomato"), sprite_bala, self.grupo_balas, self.grupo_sprites)
 
         superficie = pygame.display.get_surface()
         if superficie and self.rect.top > superficie.get_height():
@@ -55,7 +55,7 @@ class CazadorEnemigo(NaveBase):
 
         # Gráfico: Caza afilado de color violeta / fucsia
         self.image = pygame.Surface((38, 38), pygame.SRCALPHA)
-        pygame.draw.polygon(self.image, (220, 60, 255), [(19, 38), (0, 6), (19, 14), (38, 6)])
+        pygame.draw.polygon(self.image, pygame.Color("darkviolet"), [(19, 38), (0, 6), (19, 14), (38, 6)])
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
 
     def update(self) -> None:
@@ -72,7 +72,7 @@ class CazadorEnemigo(NaveBase):
         # Dispara proyectiles rápidos si está por encima del jugador
         if self.puede_disparar() and self.rect.bottom < self.jugador.rect.top:
             sprite_bala = obtener_sprite("bala_roja")
-            Bala(self.rect.centerx, self.rect.bottom, 0.0, 8.0, 1, (255, 50, 220), sprite_bala, self.grupo_balas, self.grupo_sprites)
+            Bala(self.rect.centerx, self.rect.bottom, 0.0, 8.0, 1, pygame.Color("magenta"), sprite_bala, self.grupo_balas, self.grupo_sprites)
 
         superficie = pygame.display.get_surface()
         if superficie and self.rect.top > superficie.get_height():
@@ -90,8 +90,8 @@ class NodrizaEnemiga(NaveBase):
 
         # Gráfico: Nave acorazada más ancha y dorada/naranja
         self.image = pygame.Surface((56, 42), pygame.SRCALPHA)
-        pygame.draw.polygon(self.image, (255, 165, 0), [(28, 42), (0, 12), (14, 0), (42, 0), (56, 12)])
-        pygame.draw.polygon(self.image, (255, 220, 100), [(28, 30), (14, 10), (42, 10)])  # Núcleo brillante
+        pygame.draw.polygon(self.image, pygame.Color("orange"), [(28, 42), (0, 12), (14, 0), (42, 0), (56, 12)])
+        pygame.draw.polygon(self.image, pygame.Color("gold"), [(28, 30), (14, 10), (42, 10)])  # Núcleo brillante
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
 
     def update(self) -> None:
@@ -101,8 +101,8 @@ class NodrizaEnemiga(NaveBase):
         # Disparo doble simultáneo desde las alas
         if self.puede_disparar():
             sprite_bala = obtener_sprite("bala_roja")
-            Bala(self.rect.left + 10, self.rect.bottom, 0.0, 6.5, 1, (255, 140, 0), sprite_bala, self.grupo_balas, self.grupo_sprites)
-            Bala(self.rect.right - 10, self.rect.bottom, 0.0, 6.5, 1, (255, 140, 0), sprite_bala, self.grupo_balas, self.grupo_sprites)
+            Bala(self.rect.left + 10, self.rect.bottom, 0.0, 6.5, 1, pygame.Color("darkorange"), sprite_bala, self.grupo_balas, self.grupo_sprites)
+            Bala(self.rect.right - 10, self.rect.bottom, 0.0, 6.5, 1, pygame.Color("darkorange"), sprite_bala, self.grupo_balas, self.grupo_sprites)
 
         superficie = pygame.display.get_surface()
         if superficie and self.rect.top > superficie.get_height():

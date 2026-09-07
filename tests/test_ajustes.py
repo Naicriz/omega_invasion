@@ -1,3 +1,4 @@
+import pygame
 from omega_invasion import settings
 
 
@@ -9,8 +10,8 @@ def test_dimensiones_pantalla_validas():
 
 
 def test_color_fondo_rgb_valido():
-    """Verifica que el color de fondo sea una tupla RGB de 3 valores entre 0 y 255."""
-    assert isinstance(settings.COLOR_FONDO, tuple)
-    assert len(settings.COLOR_FONDO) == 3
-    for canal in settings.COLOR_FONDO:
+    """Verifica que el color de fondo sea un pygame.Color o tupla válida."""
+    assert isinstance(settings.COLOR_FONDO, (tuple, pygame.Color))
+    assert len(settings.COLOR_FONDO) in (3, 4)
+    for canal in settings.COLOR_FONDO[:3]:
         assert 0 <= canal <= 255

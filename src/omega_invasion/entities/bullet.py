@@ -2,7 +2,7 @@ import pygame
 import math
 
 class Bala(pygame.sprite.Sprite):
-    def __init__(self, eje_x: float, eje_y: float, vel_x: float, vel_y: float, dano: float = 1, color: tuple = (0, 255, 255), sprite: pygame.Surface | None = None, *grupos):
+    def __init__(self, eje_x: float, eje_y: float, vel_x: float, vel_y: float, dano: float = 1, color: pygame.Color | tuple | str = "cyan", sprite: pygame.Surface | None = None, *grupos):
         # Si se pasó un Group en la posición de sprite por omisión, lo reubicamos a grupos
         if isinstance(sprite, pygame.sprite.Group):
             grupos = (sprite,) + grupos

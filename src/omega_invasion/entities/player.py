@@ -160,26 +160,28 @@ class Jugador(NaveBase):
         sprite_omni = obtener_sprite("bala_omni")
 
         # DISPARO FRONTAL VERTICAL (Básico + Mejoras de Ráfaga)
+        color_frontal = pygame.Color("cyan")
         match self.nivel_canon:
             case 1:  # 1 bala central
-                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
             case 2:  # 2 balas paralelas
-                Bala(self.rect.left + 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
-                Bala(self.rect.right - 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.left + 8, self.rect.top, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.right - 8, self.rect.top, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
             case 3:  # Nivel 3: ráfaga de 3
-                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
-                Bala(self.rect.left + 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
-                Bala(self.rect.right - 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
-            case _:  # Nivel 4 o superior: ráfaga de
-                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
-                Bala(self.rect.left + 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
-                Bala(self.rect.right - 6, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
-                Bala(self.rect.centerx, self.rect.top - 20, 0.0, -12.0, dano, (0, 255, 255), sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.left + 6, self.rect.top, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.right - 6, self.rect.top, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
+            case 4:  # Nivel 4: ráfaga de 4
+                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.left + 6, self.rect.top, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.right - 6, self.rect.top, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
+                Bala(self.rect.centerx, self.rect.top - 20, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
 
         # CAÑÓN OMNIDIRECCIONAL (Dispara en todas direcciones en 360°)
         if self.nivel_canon_omni > 0:
             vel_omni = 9.0
             diag = 6.36  # 9 / sqrt(2) para que las diagonales tengan la misma velocidad
+            color_omni = pygame.Color("aquamarine")
             
             # Las 8 direcciones cardinales y diagonales
             direcciones = [
@@ -193,4 +195,4 @@ class Jugador(NaveBase):
                 (diag, diag)            # Diagonal abajo-der
             ]
             for vx, vy in direcciones:
-                Bala(self.rect.centerx, self.rect.centery, vx, vy, dano * 0.8, (50, 255, 200), sprite_omni, grupo_balas, grupo_global)
+                Bala(self.rect.centerx, self.rect.centery, vx, vy, dano * 0.8, color_omni, sprite_omni, grupo_balas, grupo_global)

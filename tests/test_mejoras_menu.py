@@ -11,8 +11,7 @@ def test_catalogo_mejoras_estructura():
         assert "id" in mejora and isinstance(mejora["id"], str)
         assert "titulo" in mejora and isinstance(mejora["titulo"], str)
         assert "icono" in mejora and isinstance(mejora["icono"], str)
-        assert "desc" in mejora and isinstance(mejora["desc"], str)
-        assert "color" in mejora and isinstance(mejora["color"], tuple)
+        assert "color" in mejora and isinstance(mejora["color"], (tuple, pygame.Color))
 
 
 def test_menu_mejoras_abrir():

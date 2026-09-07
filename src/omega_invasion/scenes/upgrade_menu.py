@@ -63,11 +63,11 @@ class MenuMejoras:
 
         # 1. Capa semitransparente oscura sobre el juego
         overlay = pygame.Surface((settings.ANCHO_PANTALLA, settings.ALTO_PANTALLA), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))  # Negro con transparencia
+        overlay.fill(pygame.Color(0, 0, 0, 180))  # Negro con transparencia
         pantalla.blit(overlay, (0, 0))
 
         # Título superior
-        texto_banner = self.fuente_titulo.render("¡SUBISTE DE NIVEL! ELIGE UNA MEJORA", True, (255, 255, 255))
+        texto_banner = self.fuente_titulo.render("¡SUBISTE DE NIVEL! ELIGE UNA MEJORA", True, pygame.Color("white"))
         pantalla.blit(texto_banner, texto_banner.get_rect(center=(settings.ANCHO_PANTALLA // 2, 180)))
 
         # 2. Dibujar las 3 cartas
@@ -76,11 +76,11 @@ class MenuMejoras:
             es_hover = rect.collidepoint(mouse_pos)
             
             # Fondo de la carta
-            color_fondo = (45, 45, 60) if not es_hover else (60, 60, 85)
+            color_fondo = pygame.Color("gray20") if not es_hover else pygame.Color("gray30")
             pygame.draw.rect(pantalla, color_fondo, rect, border_radius=16)
             
             # Borde brillante
-            color_borde = carta["color"] if es_hover else (90, 90, 110)
+            color_borde = carta["color"] if es_hover else pygame.Color("gray45")
             grosor = 4 if es_hover else 2
             pygame.draw.rect(pantalla, color_borde, rect, width=grosor, border_radius=16)
 
@@ -89,9 +89,9 @@ class MenuMejoras:
             pantalla.blit(tecla_txt, (rect.x + 20, rect.y + 20))
 
             # Título de la mejora
-            tit_surf = self.fuente_titulo.render(carta["titulo"], True, (255, 255, 255))
+            tit_surf = self.fuente_titulo.render(carta["titulo"], True, pygame.Color("white"))
             pantalla.blit(tit_surf, (rect.x + 20, rect.y + 65))
 
             # Descripción
-            desc_surf = self.fuente_desc.render(carta["desc"], True, (200, 200, 200))
+            desc_surf = self.fuente_desc.render(carta["desc"], True, pygame.Color("lightgray"))
             pantalla.blit(desc_surf, (rect.x + 20, rect.y + 120))
