@@ -1,4 +1,5 @@
 from omega_invasion.scenes.upgrade_menu import MenuMejoras
+from omega_invasion.scenes.game_over_menu import MenuGameOver
 from omega_invasion.entities.player import Jugador
 from omega_invasion.entities.enemy import DronEnemigo, CazadorEnemigo, NodrizaEnemiga
 
@@ -25,18 +26,49 @@ class Juego:
         self.balas_enemigos = pygame.sprite.Group()
         self.enemigos = pygame.sprite.Group()
 
+        # Menús interactivos
+        self.menu_mejoras = MenuMejoras()
+        self.menu_game_over = MenuGameOver()
+
+        # Configurar partida inicial
+        self.reiniciar()
+
+    def reiniciar(self) -> None:
+        """Restablece el estado de la partida a sus valores iniciales."""
+        self.todos_los_sprites.empty()
+        self.balas_jugador.empty()
+        self.balas_enemigos.empty()
+        self.enemigos.empty()
+
         self.tiempo_inicio_juego = pygame.time.get_ticks()
         self.ultimo_spawn_enemigo = 0
         self.intervalo_spawn_ms = 800
-        # Instanciar jugador centrado abajo (velocidad = 7 px/frame)
-        self.jugador = Jugador(settings.ANCHO_PANTALLA // 2, settings.ALTO_PANTALLA - 80, 7, self.balas_jugador, self.todos_los_sprites)
 
-        self.menu_mejoras = MenuMejoras()
+        # Instanciar jugador centrado abajo (velocidad = 7 px/frame)
+        self.jugador = Jugador(
+            settings.ANCHO_PANTALLA // 2,
+            settings.ALTO_PANTALLA - 80,
+            7,
+            self.balas_jugador,
+            self.todos_los_sprites
+        )
+
+        self.menu_mejoras.activo = False
+        self.menu_game_over.activo = False
 
     def manejar_eventos(self) -> None:
         """Procesa la cola de eventos de Pygame."""
         for evento in pygame.event.get():
-            # Si el menú de mejoras está activo, se pasan los eventos a el.
+            # Si el menú de Game Over está activo, procesa sus eventos
+            if self.menu_game_over.activo:
+                accion = self.menu_game_over.manejar_evento(evento)
+                if accion == "reiniciar":
+                    self.reiniciar()
+                elif accion == "salir":
+                    self.en_ejecucion = False
+                continue
+
+            # Si el menú de mejoras está activo, se pasan los eventos a él.
             if self.menu_mejoras.activo:
                 mejora_elegida = self.menu_mejoras.manejar_evento(evento)
                 if mejora_elegida:
@@ -53,8 +85,8 @@ class Juego:
 
     def actualizar(self) -> None:
         """Actualiza el estado y la lógica de las entidades del juego."""
-        # Si el menú está activo, no se actualiza la lógica del juego
-        if self.menu_mejoras.activo:
+        # Si algún menú está activo, no se actualiza la lógica del juego
+        if self.menu_mejoras.activo or self.menu_game_over.activo:
             return
 
         self.todos_los_sprites.update()
@@ -68,6 +100,8 @@ class Juego:
 
         if self.menu_mejoras.activo:
             self.menu_mejoras.dibujar(self.pantalla)
+        elif self.menu_game_over.activo:
+            self.menu_game_over.dibujar(self.pantalla)
 
         pygame.display.flip()
 
@@ -98,13 +132,22 @@ class Juego:
                         print(f"¡Subiste al nivel {self.jugador.nivel}!")
 
         # Balas enemigas impactan al jugador
-        if pygame.sprite.spritecollide(self.jugador, self.balas_enemigos, True):
+        balas_impactadas = pygame.sprite.spritecollide(self.jugador, self.balas_enemigos, True)
+        for _ in balas_impactadas:
             self.jugador.recibir_dano(1)
 
         # Choque directo cuerpo a cuerpo (Nave enemiga choca con el jugador)
         enemigos_chocados = pygame.sprite.spritecollide(self.jugador, self.enemigos, True)
         for _ in enemigos_chocados:
             self.jugador.recibir_dano(2)
+
+        # Si el jugador fue destruido, se abre el menú de fin de partida
+        if not self.jugador.alive():
+            segundos_jugados = (pygame.time.get_ticks() - self.tiempo_inicio_juego) // 1000
+            self.menu_game_over.abrir(
+                nivel=self.jugador.nivel,
+                tiempo_segundos=segundos_jugados
+            )
 
     def spawn_enemigos(self) -> None:
         ahora = pygame.time.get_ticks()

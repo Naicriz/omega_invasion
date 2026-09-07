@@ -61,7 +61,7 @@ class MenuMejoras:
         if not self.activo:
             return
 
-        # 1. Capa semitransparente oscura sobre el juego
+        # Capa semitransparente oscura sobre el juego
         overlay = pygame.Surface((settings.ANCHO_PANTALLA, settings.ALTO_PANTALLA), pygame.SRCALPHA)
         overlay.fill(pygame.Color(0, 0, 0, 180))  # Negro con transparencia
         pantalla.blit(overlay, (0, 0))
@@ -70,7 +70,7 @@ class MenuMejoras:
         texto_banner = self.fuente_titulo.render("¡SUBISTE DE NIVEL! ELIGE UNA MEJORA", True, pygame.Color("white"))
         pantalla.blit(texto_banner, texto_banner.get_rect(center=(settings.ANCHO_PANTALLA // 2, 180)))
 
-        # 2. Dibujar las 3 cartas
+        # Dibujar las 3 cartas
         mouse_pos = pygame.mouse.get_pos()
         for i, (carta, rect) in enumerate(zip(self.opciones, self.rects_cartas)):
             es_hover = rect.collidepoint(mouse_pos)

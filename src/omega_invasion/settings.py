@@ -3,7 +3,7 @@ import pygame
 SCREEN_WIDTH: int = 1280
 SCREEN_HEIGHT: int = 1280
 FPS: int = 60
-BG_COLOR: pygame.Color = pygame.Color("gray9")
+BG_COLOR: pygame.Color = pygame.Color("gray8")
 
 # Constantes en español
 ANCHO_PANTALLA: int = SCREEN_WIDTH

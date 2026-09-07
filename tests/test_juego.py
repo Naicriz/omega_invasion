@@ -111,3 +111,40 @@ def test_actualizar_pausado_con_menu():
 
     assert juego.jugador.pos.y == pos_y_inicial
 
+
+def test_muerte_jugador_activa_game_over():
+    """Verifica que el menú de Game Over se abra automáticamente cuando el jugador muere."""
+    from omega_invasion.entities.bullet import Bala
+
+    juego = Juego()
+    assert juego.menu_game_over.activo is False
+
+    # Disparar daño letal al jugador
+    for _ in range(5):
+        Bala(juego.jugador.rect.centerx, juego.jugador.rect.centery, 0, 1, 1, (0, 0, 0), None, juego.balas_enemigos)
+
+    juego.manejar_colisiones()
+
+    assert not juego.jugador.alive()
+    assert juego.menu_game_over.activo is True
+
+
+def test_juego_reiniciar():
+    """Verifica que reiniciar() restaure las entidades, grupos, HP y desactive menús."""
+    from omega_invasion.entities.enemy import DronEnemigo
+
+    juego = Juego()
+    # Simular partida avanzada con entidades y menú de Game Over
+    DronEnemigo(100, 100, 1, juego.balas_enemigos, juego.todos_los_sprites, juego.enemigos)
+    juego.jugador.hp = 1
+    juego.menu_game_over.activo = True
+
+    juego.reiniciar()
+
+    assert juego.jugador.alive()
+    assert juego.jugador.hp == 5
+    assert len(juego.enemigos) == 0
+    assert juego.menu_game_over.activo is False
+    assert juego.menu_mejoras.activo is False
+
+
