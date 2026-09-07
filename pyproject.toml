@@ -29,3 +29,12 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+[tool.pyrefly]
+python-interpreter-path = ".venv/bin/python"
+type-checking-mode = "off"
+disable-type-errors-in-ide = true

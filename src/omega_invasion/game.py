@@ -15,13 +15,15 @@ class Juego:
         self.reloj = pygame.time.Clock()
         self.en_ejecucion = False
 
-        # Instanciar grupo de sprites
+        # Instanciar grupos de sprites para organización
         self.todos_los_sprites = pygame.sprite.Group()
+        self.balas_jugador = pygame.sprite.Group()
+        self.balas_enemigos = pygame.sprite.Group()
+
         # Instanciar jugador centrado abajo (velocidad = 7 pixeles por frame)
-        self.jugador = Jugador(settings.ANCHO_PANTALLA // 2, settings.ALTO_PANTALLA - 80, velocidad=7)
+        self.jugador = Jugador(settings.ANCHO_PANTALLA // 2, settings.ALTO_PANTALLA - 80, 7, self.balas_jugador)
         # Agregar jugador al grupo de sprites
         self.todos_los_sprites.add(self.jugador)
-
 
     def manejar_eventos(self) -> None:
         """Procesa la cola de eventos de Pygame."""
@@ -36,7 +38,7 @@ class Juego:
 
     def actualizar(self) -> None:
         """Actualiza el estado y la lógica de las entidades del juego."""
-        self.jugador.update()
+        self.todos_los_sprites.update()
 
     def dibujar(self) -> None:
         """Renderiza los elementos gráficos en la pantalla."""
@@ -53,3 +55,23 @@ class Juego:
             self.dibujar()
             self.reloj.tick(settings.FPS)
         pygame.quit()
+
+    def manejar_colisiones(self) -> None:
+        # 1. Balas del jugador impactan enemigos
+        # groupcollide elimina la bala (True) y no al enemigo aún (False) para evaluar su vida
+        impactos = pygame.sprite.groupcollide(self.enemigos, self.balas_jugador, False, True)
+        for enemigo, balas in impactos.items():
+            for bala in balas:
+                if enemigo.recibir_dano(bala.dano):
+                    # Si el enemigo murió, le da experiencia al jugador
+                    if self.jugador.ganar_exp(enemigo.exp_otorgada):
+                        print(f"¡Subiste al nivel {self.jugador.nivel}!")
+
+        # 2. Balas enemigas impactan al jugador
+        if pygame.sprite.spritecollide(self.jugador, self.balas_enemigos, True):
+            self.jugador.recibir_dano(1)
+
+        # 3. Choque directo cuerpo a cuerpo (Nave enemiga choca con el jugador)
+        enemigos_chocados = pygame.sprite.spritecollide(self.jugador, self.enemigos, True)
+        for _ in enemigos_chocados:
+            self.jugador.recibir_dano(2)

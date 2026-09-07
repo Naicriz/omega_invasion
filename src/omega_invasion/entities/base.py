@@ -20,7 +20,7 @@ class NaveBase(pygame.sprite.Sprite):
             return True
         return False
 
-    def puede_disparar(self, tiempo_actual: float) -> bool:
+    def puede_disparar(self) -> bool:
         """Indica si la nave puede disparar en función de la cadencia."""
         tiempo_actual = pygame.time.get_ticks()
         if tiempo_actual - self.ultimo_disparo >= self.cadencia_ms:

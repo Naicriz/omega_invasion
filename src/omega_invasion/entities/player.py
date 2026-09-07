@@ -1,15 +1,18 @@
+from omega_invasion.entities.bullet import Bala
 from omega_invasion.entities.base import NaveBase
 import pygame
 
 
 class Jugador(NaveBase):
-    def __init__(self, eje_x: float, eje_y: float, velocidad: float, *grupos: tuple):
+    def __init__(self, eje_x: float, eje_y: float, velocidad: float, grupo_balas: pygame.sprite.Group, *grupos: tuple):
         # Inicia con 3 puntos de vida, la velocidad indicada y cadencia de 350ms.
         super().__init__(eje_x, eje_y, hp=3, velocidad=velocidad, cadencia_ms=350, *grupos)
+        # grupo_balas: Grupo donde se guardaran las balas creadas por el jugador
+        self.grupo_balas = grupo_balas
         # Cargar la imagen del jugador
-        self.image = pygame.Surface((44, 44), pygame.SRCALPHA)
+        self.image = pygame.Surface((40, 40), pygame.SRCALPHA)
         # Dibujar la nave del jugador
-        pygame.draw.polygon(self.image, (0, 220, 255), [(22, 0), (44, 40), (22, 30), (0, 40)])
+        pygame.draw.polygon(self.image, (0, 220, 255), [(20, 0), (40, 40), (20, 30), (0, 40)])
         # Obtener el rectángulo de la nave
         self.rect = self.image.get_rect(center=(eje_x, eje_y))
 
@@ -53,6 +56,10 @@ class Jugador(NaveBase):
         self.rect.clamp_ip(pygame.display.get_surface().get_rect()) # clamp_ip es para que no se salga de la pantalla
         self.pos = pygame.math.Vector2(self.rect.center) # Actualizar la posición del vector
 
+        # Dispara cuando se mantiene presionado
+        if teclas[pygame.K_SPACE]:
+            self.disparar(self.grupo_balas)
+
     def ganar_exp(self, cantidad: int) -> bool:
         """Suma experiencia. Devuelve True si subió de nivel."""
         self.exp += cantidad
@@ -84,3 +91,24 @@ class Jugador(NaveBase):
             case "escudo":
                 self.escudo_max += 1
                 self.escudo_actual = self.escudo_max
+    
+    def disparar(self, grupo_balas: pygame.sprite.Group) -> None:
+        """Genera los proyectiles según el nivel de la mejora."""
+        if not self.puede_disparar():
+            return
+        
+        dano = self.nivel_dano # Daño base afectado por mejoras
+
+        match self.nivel_canon:
+            case 1:  # 1 bala central
+                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
+            case 2:  # 2 balas paralelas
+                Bala(self.rect.left + 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
+                Bala(self.rect.right - 8, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
+            case 3:  # 3 balas en abanico
+                Bala(self.rect.centerx, self.rect.top, 0.0, -12.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
+                Bala(self.rect.left, self.rect.top, -3.0, -11.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
+                Bala(self.rect.right, self.rect.top, 3.0, -11.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
+            case _:  # Nivel 4 o superior: ráfaga de 5
+                for angulo_x in (-4.0, -2.0, 0.0, 2.0, 4.0):
+                    Bala(self.rect.centerx, self.rect.top, angulo_x, -11.0, dano, (0, 255, 255), grupo_balas, self.groups()[0])
