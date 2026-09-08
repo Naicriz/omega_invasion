@@ -30,3 +30,22 @@ def test_bala_sale_de_pantalla_se_elimina():
     bala.update()
     assert not bala.alive()
     assert bala not in grupo
+
+
+def test_bola_energia_inicializacion_y_rotacion():
+    """Verifica que BolaEnergia cargue el sprite solar y rote en cada update."""
+    from omega_invasion.entities.bullet import BolaEnergia
+
+    pygame.display.set_mode((400, 400))
+    grupo = pygame.sprite.Group()
+    bola = BolaEnergia(150, 150, 0.0, 5.0, 1, grupo)
+
+    assert bola in grupo
+    assert bola.sprite_base is not None
+    assert bola.sprite_base.get_width() == 16
+    assert bola.sprite_base.get_height() == 16
+    angulo_inicial = bola.angulo_rotacion
+
+    bola.update()
+    assert bola.angulo_rotacion > angulo_inicial
+    assert bola.rect.centery > 150

@@ -3,7 +3,7 @@ import math
 import random
 import pygame
 from omega_invasion.entities.base import NaveBase
-from omega_invasion.entities.bullet import Bala
+from omega_invasion.entities.bullet import Bala, BolaEnergia
 from omega_invasion.entities.effects import ParticulaEstela
 from omega_invasion.utils.assets import obtener_sprite, reproducir_sonido
 
@@ -152,13 +152,13 @@ class NodrizaEnemiga(NaveBase):
         self.pos.y += self.vel
         self.rect.center = (round(self.pos.x), round(self.pos.y))
 
-        # Estela doble de motores pesados
+        # Estela doble de motores de plasma pesados
         self.contador_estela += 1
         if self.contador_estela % 2 == 0:
             ParticulaEstela(
-                self.rect.left + 8,
+                self.rect.left + 6,
                 self.rect.top - 2,
-                pygame.Color("darkorange"),
+                pygame.Color("orange"),
                 random.uniform(-0.2, 0.2),
                 -random.uniform(1.2, 2.2),
                 12,
@@ -166,9 +166,9 @@ class NodrizaEnemiga(NaveBase):
                 self.grupo_sprites
             )
             ParticulaEstela(
-                self.rect.right - 8,
+                self.rect.right - 6,
                 self.rect.top - 2,
-                pygame.Color("darkorange"),
+                pygame.Color("orange"),
                 random.uniform(-0.2, 0.2),
                 -random.uniform(1.2, 2.2),
                 12,
@@ -176,12 +176,15 @@ class NodrizaEnemiga(NaveBase):
                 self.grupo_sprites
             )
 
-        # Disparo doble simultáneo desde las alas
+        # Patrón de disparo en abanico (salva triple de bolas de energía)
         if self.puede_disparar():
-            reproducir_sonido("laser_enemigo", volumen=0.12)
-            sprite_bala = obtener_sprite("bala_roja")
-            Bala(self.rect.left + 10, self.rect.bottom, 0.0, 6.5, 1, pygame.Color("darkorange"), sprite_bala, self.grupo_balas, self.grupo_sprites)
-            Bala(self.rect.right - 10, self.rect.bottom, 0.0, 6.5, 1, pygame.Color("darkorange"), sprite_bala, self.grupo_balas, self.grupo_sprites)
+            reproducir_sonido("laser_enemigo", volumen=0.15)
+            # 1. Cañón izquierdo en ángulo diagonal
+            BolaEnergia(self.rect.left + 6, self.rect.bottom - 4, -2.2, 5.0, 1, self.grupo_balas, self.grupo_sprites)
+            # 2. Reactor central frontal hacia abajo
+            BolaEnergia(self.rect.centerx, self.rect.bottom, 0.0, 5.8, 1, self.grupo_balas, self.grupo_sprites)
+            # 3. Cañón derecho en ángulo diagonal
+            BolaEnergia(self.rect.right - 6, self.rect.bottom - 4, 2.2, 5.0, 1, self.grupo_balas, self.grupo_sprites)
 
         superficie = pygame.display.get_surface()
         if superficie and self.rect.top > superficie.get_height():

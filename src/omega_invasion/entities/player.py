@@ -298,7 +298,26 @@ class Jugador(NaveBase):
             case "escudo":
                 self.escudo_max += 1
                 self.escudo_actual = self.escudo_max
-    
+
+    def reiniciar_mejoras(self) -> None:
+        """Restablece los niveles, atributos y mejoras del jugador a sus valores base."""
+        self.nivel = NVL_ACTUAL
+        self.exp = EXP_ACTUAL
+        self.exp_siguiente_nivel = EXP_SIGUIENTE
+        self.nivel_canon = NVL_CANON
+        self.nivel_canon_omni = NVL_CANON_OMNI
+        self.nivel_cadencia = NVL_CADENCIA
+        self.nivel_dano = NVL_DANO
+        self.nivel_velocidad = NVL_VELOCIDAD
+        self.nivel_vida_max = 0
+        self.escudo_max = ESCUDO_MAX
+        self.escudo_actual = ESCUDO_ACTUAL
+        self.hp = 5.0
+        self.max_hp = 5.0
+        self.vel = 7.0
+        self.cadencia_ms = 400.0
+        self.muerto = False
+
     def disparar(self, grupo_balas: pygame.sprite.Group) -> None:
         """Genera los proyectiles según el nivel de la mejora."""
         if not self.puede_disparar():

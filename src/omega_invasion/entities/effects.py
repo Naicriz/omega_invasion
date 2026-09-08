@@ -4,7 +4,7 @@ import pygame
 
 
 class ParticulaEstela(pygame.sprite.Sprite):
-    """Partícula pixel art emitida por motores/propulsores que se desvanece al descender."""
+    """Partícula emitida por motores/propulsores que se desvanece al descender."""
 
     def __init__(self, x: float, y: float, color: pygame.Color, vel_x: float, vel_y: float, vida_max: int = 14, tamano: int = 4, *grupos):
         super().__init__(*grupos)
@@ -43,7 +43,7 @@ class ParticulaEstela(pygame.sprite.Sprite):
 
 
 class ParticulaEscombro(pygame.sprite.Sprite):
-    """Bloque pixel art expulsado en explosiones con desaceleración y cambio de color progresivo."""
+    """Bloque expulsado en explosiones con desaceleración y cambio de color progresivo."""
 
     def __init__(self, x: float, y: float, color_inicial: pygame.Color, color_final: pygame.Color, vel_x: float, vel_y: float, vida_max: int = 22, tamano: int = 4, *grupos):
         super().__init__(*grupos)
@@ -88,7 +88,7 @@ class ParticulaEscombro(pygame.sprite.Sprite):
 
 
 class OndaChoque(pygame.sprite.Sprite):
-    """Anillo pixel art en expansión que representa la onda de choque de una detonación."""
+    """Anillo de onda de choque de una detonación."""
 
     def __init__(self, x: float, y: float, radio_max: int, color: pygame.Color, vida_max: int = 16, *grupos):
         super().__init__(*grupos)
@@ -125,7 +125,7 @@ class OndaChoque(pygame.sprite.Sprite):
 
 
 def crear_explosion(pos: tuple[float, float], tipo_nave: str, grupo_sprites: pygame.sprite.Group) -> None:
-    """Genera una explosión pixel art completa con onda de choque y escombros."""
+    """Genera una explosión con onda de choque y escombros."""
     x, y = pos
 
     match tipo_nave:

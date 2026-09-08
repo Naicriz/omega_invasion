@@ -42,7 +42,9 @@ def test_cazador_enemigo_persigue_jugador():
 
 
 def test_nodriza_enemiga_atributos_y_disparo():
-    """Verifica la vida blindada de la nodriza y su capacidad de disparo."""
+    """Verifica la vida blindada de la nodriza y su patrón de disparo en abanico con bolas de energía."""
+    from omega_invasion.entities.bullet import BolaEnergia
+
     grupo_balas = pygame.sprite.Group()
     grupo_sprites = pygame.sprite.Group()
 
@@ -53,9 +55,19 @@ def test_nodriza_enemiga_atributos_y_disparo():
     assert nodriza.pos.y == 100
 
     nodriza.ultimo_disparo = -10000
-    # Al forzar cadencia debe disparar doble bala
+    # Al forzar cadencia debe disparar salva triple en abanico
     nodriza.update()
-    assert len(grupo_balas) >= 2
+    assert len(grupo_balas) == 3
+
+    balas = list(grupo_balas)
+    for b in balas:
+        assert isinstance(b, BolaEnergia)
+
+    # Verificar abanico: izquierda, centro y derecha
+    vels_x = [b.vel.x for b in balas]
+    assert any(vx < 0 for vx in vels_x)  # En ángulo hacia la izquierda
+    assert any(vx == 0 for vx in vels_x) # Central recta hacia abajo
+    assert any(vx > 0 for vx in vels_x)  # En ángulo hacia la derecha
 
 
 def test_enemigos_sprites_pixel_art():
@@ -69,9 +81,9 @@ def test_enemigos_sprites_pixel_art():
 
     assert dron.image.get_size() == (36, 36)
     assert cazador.image.get_size() == (38, 38)
-    assert nodriza.image.get_size() == (56, 42)
+    assert nodriza.image.get_size() == (56, 44)
     # Verificar que no sean superficies vacías
     assert any(dron.image.get_at((18, y))[3] > 0 for y in range(36))
     assert any(cazador.image.get_at((19, y))[3] > 0 for y in range(38))
-    assert any(nodriza.image.get_at((28, y))[3] > 0 for y in range(42))
+    assert any(nodriza.image.get_at((28, y))[3] > 0 for y in range(44))
 

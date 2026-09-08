@@ -70,16 +70,28 @@ def inicializar_assets() -> None:
         pygame.draw.polygon(surf, pygame.Color("darkviolet"), [(19, 38), (0, 6), (19, 14), (38, 6)])
         _SPRITES["cazador"] = surf
 
-    # Nodriza (Nave pesada acorazada)
+    # Nodriza (Crucero Dreadnought Acorazado con núcleo de plasma solar)
     ruta_nodriza = RUTA_NAVES / "nodriza.png"
     if ruta_nodriza.exists():
         img_nodriza = pygame.image.load(str(ruta_nodriza)).convert_alpha()
-        _SPRITES["nodriza"] = pygame.transform.scale(img_nodriza, (56, 42))
+        _SPRITES["nodriza"] = pygame.transform.scale(img_nodriza, (56, 44))
     else:
-        surf = pygame.Surface((56, 42), pygame.SRCALPHA)
-        pygame.draw.polygon(surf, pygame.Color("orange"), [(28, 42), (0, 12), (14, 0), (42, 0), (56, 12)])
-        pygame.draw.polygon(surf, pygame.Color("gold"), [(28, 30), (14, 10), (42, 10)])
+        surf = pygame.Surface((56, 44), pygame.SRCALPHA)
+        pygame.draw.polygon(surf, pygame.Color("slateblack"), [(28, 44), (0, 12), (14, 0), (42, 0), (56, 12)])
+        pygame.draw.circle(surf, pygame.Color("orangered"), (28, 20), 8)
         _SPRITES["nodriza"] = surf
+
+    # Proyectil Bola de Energía de Plasma (Nave Nodriza)
+    ruta_bola = RUTA_NAVES / "bola_energia.png"
+    if ruta_bola.exists():
+        img_bola = pygame.image.load(str(ruta_bola)).convert_alpha()
+        _SPRITES["bola_energia"] = pygame.transform.scale(img_bola, (16, 16))
+    else:
+        surf_bola = pygame.Surface((16, 16), pygame.SRCALPHA)
+        pygame.draw.circle(surf_bola, pygame.Color("orangered"), (8, 8), 7)
+        pygame.draw.circle(surf_bola, pygame.Color("gold"), (8, 8), 4)
+        pygame.draw.circle(surf_bola, pygame.Color("white"), (8, 8), 2)
+        _SPRITES["bola_energia"] = surf_bola
 
     # 4. Cargar Animación del Propulsor (thruster.gif)
     ruta_thruster = RUTA_NAVES / "thruster.gif"

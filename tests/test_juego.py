@@ -148,3 +148,63 @@ def test_juego_reiniciar():
     assert juego.menu_mejoras.activo is False
 
 
+def test_juego_reiniciar_segundos_y_upgrades():
+    """Verifica que al reiniciar la partida se reinicie el tiempo jugado (0s) y todas las mejoras del jugador."""
+    juego = Juego()
+
+    # Simular progreso de partida y mejoras acumuladas
+    juego.acumulador_ms_juego = 75000
+    juego.segundos_jugados = 75
+    juego.jugador.aplicar_mejora("canon")
+    juego.jugador.aplicar_mejora("canon_omni")
+    juego.jugador.aplicar_mejora("cadencia")
+    juego.jugador.aplicar_mejora("velocidad")
+    juego.jugador.aplicar_mejora("vida_max")
+    juego.jugador.aplicar_mejora("escudo")
+    juego.jugador.nivel = 6
+
+    # Simular menú de mejoras con opciones cargadas
+    juego.menu_mejoras.abrir(juego.jugador)
+    assert len(juego.menu_mejoras.opciones) > 0
+
+    # Reiniciar la partida (como tras game over)
+    juego.reiniciar()
+
+    # Verificaciones de tiempo jugado
+    assert juego.segundos_jugados == 0
+    assert juego.acumulador_ms_juego == 0
+
+    # Verificaciones de upgrades y stats del jugador
+    assert juego.jugador.nivel == 1
+    assert juego.jugador.nivel_canon == 1
+    assert juego.jugador.nivel_canon_omni == 0
+    assert juego.jugador.nivel_cadencia == 1
+    assert juego.jugador.nivel_dano == 1.0
+    assert juego.jugador.nivel_velocidad == 1
+    assert juego.jugador.nivel_vida_max == 0
+    assert juego.jugador.escudo_max == 0
+    assert juego.jugador.escudo_actual == 0
+    assert juego.jugador.hp == 5.0
+    assert juego.jugador.max_hp == 5.0
+    assert juego.jugador.vel == 7.0
+    assert juego.jugador.cadencia_ms == 400.0
+
+    # Menú de mejoras limpio
+    assert juego.menu_mejoras.activo is False
+    assert len(juego.menu_mejoras.opciones) == 0
+    assert juego.menu_mejoras.jugador_actual is None
+
+
+def test_tiempo_no_avanza_durante_menus():
+    """Verifica que el tiempo acumulado de juego no avance mientras un menú está activo."""
+    juego = Juego()
+    juego.menu_game_over.activo = True
+    acumulador_antes = juego.acumulador_ms_juego
+
+    # Simular varios ticks
+    juego.actualizar()
+    juego.actualizar()
+
+    assert juego.acumulador_ms_juego == acumulador_antes
+
+

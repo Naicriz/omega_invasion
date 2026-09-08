@@ -16,6 +16,13 @@ class MenuMejoras:
         self.fuente_desc = obtener_fuente(8)
         self.fuente_tecla = obtener_fuente(12)
 
+    def reiniciar(self) -> None:
+        """Limpia el estado y cartas del menú de mejoras."""
+        self.activo = False
+        self.opciones.clear()
+        self.rects_cartas.clear()
+        self.jugador_actual = None
+
     def abrir(self, jugador=None) -> None:
         """Elige hasta 3 mejoras al azar entre las no maximizadas y pausa el juego."""
         self.jugador_actual = jugador

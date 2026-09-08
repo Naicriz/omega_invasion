@@ -4,6 +4,7 @@ from omega_invasion.entities.player import Jugador
 from omega_invasion.entities.enemy import DronEnemigo, CazadorEnemigo, NodrizaEnemiga
 from omega_invasion.entities.effects import crear_explosion
 from omega_invasion.utils.assets import reproducir_sonido
+from omega_invasion.utils.background import FondoEstrellas
 
 import random
 import pygame
@@ -21,6 +22,9 @@ class Juego:
         )
         self.reloj = pygame.time.Clock()
         self.en_ejecucion = False
+
+        # Fondo espacial dinámico con estrellas en paralaje
+        self.fondo_estrellas = FondoEstrellas()
 
         # Instanciar grupos de sprites para organización
         self.todos_los_sprites = pygame.sprite.Group()
@@ -43,8 +47,12 @@ class Juego:
         self.balas_enemigos.empty()
         self.enemigos.empty()
 
-        self.tiempo_inicio_juego = pygame.time.get_ticks()
-        self.ultimo_spawn_enemigo = 0
+        ahora = pygame.time.get_ticks()
+        self.tiempo_inicio_juego = ahora
+        self.ultimo_tick_juego = ahora
+        self.acumulador_ms_juego = 0
+        self.segundos_jugados = 0
+        self.ultimo_spawn_enemigo = ahora
         self.intervalo_spawn_ms = 800
         self.shake_intensidad = 0.0
 
@@ -56,8 +64,9 @@ class Juego:
             self.balas_jugador,
             self.todos_los_sprites
         )
+        self.jugador.reiniciar_mejoras()
 
-        self.menu_mejoras.activo = False
+        self.menu_mejoras.reiniciar()
         self.menu_game_over.activo = False
 
     def manejar_eventos(self) -> None:
@@ -89,9 +98,19 @@ class Juego:
 
     def actualizar(self) -> None:
         """Actualiza el estado y la lógica de las entidades del juego."""
-        # Si algún menú está activo, no se actualiza la lógica del juego
+        # Si algún menú está activo, no se actualiza la lógica del juego ni avanza el tiempo jugado
         if self.menu_mejoras.activo or self.menu_game_over.activo:
+            self.ultimo_tick_juego = pygame.time.get_ticks()
             return
+
+        ahora = pygame.time.get_ticks()
+        delta = ahora - self.ultimo_tick_juego
+        self.ultimo_tick_juego = ahora
+        self.acumulador_ms_juego += delta
+        self.segundos_jugados = self.acumulador_ms_juego // 1000
+
+        # Actualizar desplazamiento de estrellas en el fondo
+        self.fondo_estrellas.actualizar()
 
         # Reducción paulatina de la sacudida de pantalla
         if self.shake_intensidad > 0:
@@ -102,18 +121,17 @@ class Juego:
         self.manejar_colisiones()
 
     def dibujar(self) -> None:
-        """Renderiza los elementos gráficos en la pantalla con soporte para sacudida (screen shake)."""
-        self.pantalla.fill(settings.COLOR_FONDO)
-
+        """Renderiza los elementos gráficos en la pantalla con fondo estelar y soporte para sacudida."""
         if self.shake_intensidad > 0.1:
             max_offset = max(1, int(self.shake_intensidad))
             offset_x = random.randint(-max_offset, max_offset)
             offset_y = random.randint(-max_offset, max_offset)
             surf_mundo = pygame.Surface((settings.ANCHO_PANTALLA, settings.ALTO_PANTALLA))
-            surf_mundo.fill(settings.COLOR_FONDO)
+            self.fondo_estrellas.dibujar(surf_mundo)
             self.todos_los_sprites.draw(surf_mundo)
             self.pantalla.blit(surf_mundo, (offset_x, offset_y))
         else:
+            self.fondo_estrellas.dibujar(self.pantalla)
             self.todos_los_sprites.draw(self.pantalla)
 
         if self.menu_mejoras.activo:
@@ -186,15 +204,14 @@ class Juego:
 
         # Si el jugador fue destruido, se abre el menú de fin de partida
         if not self.jugador.alive():
-            segundos_jugados = (pygame.time.get_ticks() - self.tiempo_inicio_juego) // 1000
             self.menu_game_over.abrir(
                 nivel=self.jugador.nivel,
-                tiempo_segundos=segundos_jugados
+                tiempo_segundos=self.segundos_jugados
             )
 
     def spawn_enemigos(self) -> None:
         ahora = pygame.time.get_ticks()
-        segundos_jugados = (ahora - self.tiempo_inicio_juego) // 1000
+        segundos_jugados = self.segundos_jugados
 
         # El intervalo se reduce con el tiempo y el nivel (mínimo 280ms para no saturar la CPU)
         # Empieza en 900ms y va bajando gradualmente
@@ -204,17 +221,17 @@ class Juego:
             self.ultimo_spawn_enemigo = ahora
 
             # Cantidad de enemigos por tanda según tiempo y nivel:
-            if segundos_jugados > 90 or self.jugador.nivel >= 10:
-                cantidad = random.randint(2, 3)
+            if segundos_jugados > 90 or self.jugador.nivel >= 15:
+                cantidad = random.randint(1, 3)
             elif segundos_jugados > 40 or self.jugador.nivel >= 6:
                 cantidad = random.randint(1, 2)
             else:
                 cantidad = 1
 
             # Probabilidades dinámicas: a más tiempo, más Cazadores y Nodrizas
-            peso_dron = max(25, 60 - segundos_jugados // 4)
-            peso_cazador = min(45, 25 + segundos_jugados // 6)
-            peso_nodriza = min(30, 15 + segundos_jugados // 8)
+            peso_dron = max(15, 60 - segundos_jugados // 4)
+            peso_cazador = min(25, 25 + segundos_jugados // 6)
+            peso_nodriza = min(15, 15 + segundos_jugados // 8)
 
             # Genera la tanda de enemigos
             for _ in range(cantidad):

@@ -44,3 +44,13 @@ def test_nave_base_cadencia_disparo():
     assert nave.puede_disparar() is True
     # Inmediatamente después debe estar en cooldown
     assert nave.puede_disparar() is False
+
+
+def test_nave_base_dano_posterior_a_muerte_retorna_false():
+    """Verifica que una nave ya muerta no devuelva True ni reduzca hp negativo ante impactos múltiples."""
+    nave = NaveBase(0, 0, 5, 5, 100)
+    assert nave.recibir_dano(5) is True
+    assert nave.hp == 0
+    # Segundo impacto en el mismo frame o posterior
+    assert nave.recibir_dano(5) is False
+    assert nave.hp == 0
