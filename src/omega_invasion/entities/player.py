@@ -122,7 +122,7 @@ class Jugador(NaveBase):
         self.image = self.image_base.copy()
         self.rect = self.image.get_rect(center=(eje_x, eje_y)) # Obtener el rectángulo de la nave
         self.propulsor.actualizar_posicion()
-        a
+
         self.escudo_visual = EscudoVisual(self, *grupos) # Instanciar burbuja visual del escudo en los grupos
 
         # --- Efectos visuales de movimiento ---
