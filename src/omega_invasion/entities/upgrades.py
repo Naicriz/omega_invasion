@@ -14,7 +14,7 @@ CATALOGO_MEJORAS = [
         "id": "canon_omni",
         "titulo": "Cañón Omni",
         "icono": "⭐",
-        "desc": "+2 direcciones de disparo omni (hasta 8)",
+        "desc": "+2 proyectiles Omni",
         "color": pygame.Color("aquamarine"),
         "nivel_max": 4
     },
@@ -44,7 +44,7 @@ CATALOGO_MEJORAS = [
     },
     {
         "id": "vida_max",
-        "titulo": "Refuerzo Nave",
+        "titulo": "Blindaje Espacial",
         "icono": "❤️",
         "desc": "+1 vida máxima y repara 1 punto",
         "color": pygame.Color("hotpink"),
@@ -54,7 +54,7 @@ CATALOGO_MEJORAS = [
         "id": "escudo",
         "titulo": "Escudo Protector",
         "icono": "🛡️",
-        "desc": "+1 escudo que absorbe daño",
+        "desc": "+1 escudo",
         "color": pygame.Color("mediumpurple"),
         "nivel_max": 3
     }

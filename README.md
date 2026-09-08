@@ -13,7 +13,7 @@ El proyecto fue desarrollado para la asignatura de Fundamentos de Data Science d
 
 ---
 
-## 🚀 Instalación
+## Instalación
 
 1. Clona el repositorio y accede a la carpeta:
    ```bash
@@ -38,6 +38,13 @@ poetry run omega-invasion
 
 *(También puedes iniciar con: `poetry run python -m omega_invasion.main`)*
 
+En caso contrario, puedes instalar las dependencias e iniciar directamente el archivo `main.py`:
+
+```bash
+pip install pygame-ce
+python src/omega_invasion/main.py
+```
+
 ### Controles
 
 | Acción | Teclas |
@@ -52,7 +59,7 @@ poetry run omega-invasion
 
 ## Pruebas Automatizadas (Tests)
 
-El proyecto cuenta con pruebas con la libreria **pytest** ejecutadas en modo *headless* (sin abrir ventanas):
+El proyecto cuenta con pruebas con la libreria **pytest** ejecutadas en modo *headless*:
 
 ```bash
 # Ejecutar todas las pruebas

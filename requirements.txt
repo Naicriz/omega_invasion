@@ -1,0 +1,7 @@
+iniconfig==2.3.0
+-e git+ssh://git@github.com/Naicriz/omega_invasion.git@14aeb7294eca2cf05b658fe0d779c3c3fb819191#egg=omega_invasion
+packaging==26.3
+pluggy==1.6.0
+pygame-ce==2.5.8
+Pygments==2.21.0
+pytest==9.1.1
