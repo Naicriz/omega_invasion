@@ -5,6 +5,11 @@ Un videojuego arcade espacial 2D desarrollado en **Python** con **Pygame Communi
 El proyecto fue desarrollado para la asignatura de Fundamentos de Data Science de la Universidad Tecnológica Metropolitana (UTEM).
 
 ---
+<img width="912" height="944" alt="Captura de pantalla 2026-09-08 a la(s) 12 52 19 a m" src="https://github.com/user-attachments/assets/bf480d4a-0015-41e1-9f5b-b81c4e4a0d57" />
+<img width="912" height="944" alt="Captura de pantalla 2026-09-08 a la(s) 12 49 47 a m" src="https://github.com/user-attachments/assets/be2d4654-1156-4538-9120-f9d99eb52cb1" />
+<img width="912" height="944" alt="Captura de pantalla 2026-09-08 a la(s) 12 50 05 a m" src="https://github.com/user-attachments/assets/9ceedae8-af2c-4e61-b721-f8e28db5b85e" />
+
+---
 
 ## Requisitos
 
