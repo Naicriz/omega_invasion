@@ -64,12 +64,12 @@ class MenuGameOver:
         if not self.activo:
             return
 
-        # 1. Capa semitransparente oscura
+        # Capa semitransparente oscura
         overlay = pygame.Surface((settings.ANCHO_PANTALLA, settings.ALTO_PANTALLA), pygame.SRCALPHA)
         overlay.fill(pygame.Color(0, 0, 0, 210))
         pantalla.blit(overlay, (0, 0))
 
-        # 2. Panel central
+        # Panel central
         panel_ancho = 480
         panel_alto = 360
         cx = settings.ANCHO_PANTALLA // 2
@@ -80,18 +80,18 @@ class MenuGameOver:
         pygame.draw.rect(pantalla, pygame.Color("gray15"), panel_rect, border_radius=20)
         pygame.draw.rect(pantalla, pygame.Color("crimson"), panel_rect, width=3, border_radius=20)
 
-        # 3. Título de derrota
+        # Título de derrota
         tit_surf = self.fuente_titulo.render("FIN DEL JUEGO", True, pygame.Color("crimson"))
         pantalla.blit(tit_surf, tit_surf.get_rect(center=(cx, panel_rect.top + 45)))
 
-        # 4. Estadísticas de partida
+        # Estadísticas
         minutos = self.tiempo_segundos // 60
         segs = self.tiempo_segundos % 60
         stats_texto = f"Nivel alcanzado: {self.nivel}   |   Tiempo: {minutos:02d}:{segs:02d}"
         stats_surf = self.fuente_stats.render(stats_texto, True, pygame.Color("lightgray"))
         pantalla.blit(stats_surf, stats_surf.get_rect(center=(cx, panel_rect.top + 95)))
 
-        # 5. Botones interactivos con hover
+        # Botones
         mouse_pos = pygame.mouse.get_pos()
 
         # Botón Reiniciar

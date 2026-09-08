@@ -63,7 +63,7 @@ class ParticulaEscombro(pygame.sprite.Sprite):
 
     def _actualizar_grafico(self) -> None:
         t = 1.0 - (self.vida / self.vida_max)  # 0.0 al inicio, 1.0 al final
-        # Interpolación de color
+
         r = int(self.color_inicial.r + (self.color_final.r - self.color_inicial.r) * t)
         g = int(self.color_inicial.g + (self.color_final.g - self.color_inicial.g) * t)
         b = int(self.color_inicial.b + (self.color_final.b - self.color_inicial.b) * t)
@@ -77,7 +77,6 @@ class ParticulaEscombro(pygame.sprite.Sprite):
             self.kill()
             return
 
-        # Fricción del espacio
         self.vel_x *= 0.92
         self.vel_y *= 0.92
 
@@ -130,26 +129,26 @@ def crear_explosion(pos: tuple[float, float], tipo_nave: str, grupo_sprites: pyg
 
     match tipo_nave:
         case "dron":
-            # Explosión ágil en fuego carmesí y chispas amarillas
+            # Explosión de fuego
             OndaChoque(x, y, 26, pygame.Color("orange"), 14, grupo_sprites)
             colores = [pygame.Color("yellow"), pygame.Color("crimson"), pygame.Color("orangered"), pygame.Color("white")]
             num_particulas = 16
             vel_max = 5.5
         case "cazador":
-            # Explosión de plasma violeta, magenta y cian
+            # Explosión de plasma
             OndaChoque(x, y, 32, pygame.Color("magenta"), 16, grupo_sprites)
             colores = [pygame.Color("cyan"), pygame.Color("violet"), pygame.Color("darkviolet"), pygame.Color("white")]
             num_particulas = 20
             vel_max = 6.0
         case "nodriza":
-            # Gran detonación acorazada: doble onda de choque y escombros dorados / bronce
+            # Explosión grande de la nodriza
             OndaChoque(x, y, 46, pygame.Color("gold"), 20, grupo_sprites)
             OndaChoque(x, y, 28, pygame.Color("deepskyblue"), 14, grupo_sprites)
             colores = [pygame.Color("gold"), pygame.Color("darkorange"), pygame.Color("deepskyblue"), pygame.Color("white"), pygame.Color("gray40")]
             num_particulas = 32
             vel_max = 7.5
         case "jugador":
-            # Explosión masiva de la nave del jugador
+            # Explosión grande del jugador
             OndaChoque(x, y, 50, pygame.Color("cyan"), 22, grupo_sprites)
             OndaChoque(x, y, 30, pygame.Color("aquamarine"), 16, grupo_sprites)
             colores = [pygame.Color("white"), pygame.Color("cyan"), pygame.Color("aquamarine"), pygame.Color("deepskyblue"), pygame.Color("lightgray")]

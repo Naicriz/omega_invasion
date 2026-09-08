@@ -21,7 +21,7 @@ def inicializar_assets() -> None:
     if _SPRITES:
         return
 
-    # 1. Cargar Nave Gris del jugador (escala 3x para pixel-art nítido de 48x48)
+    # 1. Cargar Nave Gris del jugador (escala 3x para 48x48)
     ruta_nave = RUTA_NAVES / "green.png"
     if ruta_nave.exists():
         img_nave = pygame.image.load(str(ruta_nave)).convert_alpha()
@@ -37,20 +37,20 @@ def inicializar_assets() -> None:
     if ruta_proyectiles.exists():
         hoja = pygame.image.load(str(ruta_proyectiles)).convert_alpha()
         
-        # Proyectil Azul de Plasma (Jugador frontal)
+        # Proyectil Azul de Plasma
         sub_azul = hoja.subsurface((100, 0, 300, 500))
         _SPRITES["bala_azul"] = pygame.transform.scale(sub_azul, (12, 22))
 
-        # Proyectil Verde / Esmeralda (Cañón Omni - Balas más pequeñas y compactas)
+        # Proyectil Verde / Esmeralda
         sub_verde = hoja.subsurface((100, 500, 300, 500))
         _SPRITES["bala_omni"] = pygame.transform.scale(sub_verde, (8, 12))
 
-        # Proyectil Naranja / Rojo (Enemigos)
+        # Proyectil Naranja / Rojo
         sub_rojo = hoja.subsurface((600, 0, 300, 500))
         _SPRITES["bala_roja"] = pygame.transform.scale(sub_rojo, (12, 22))
 
-    # 3. Cargar Naves Enemigas en Pixel Art
-    # Dron (Ágil, rojo)
+    # 3. Cargar Naves Enemigas
+    # Dron
     ruta_dron = RUTA_NAVES / "dron.png"
     if ruta_dron.exists():
         img_dron = pygame.image.load(str(ruta_dron)).convert_alpha()
@@ -60,7 +60,7 @@ def inicializar_assets() -> None:
         pygame.draw.polygon(surf, pygame.Color("crimson"), [(18, 36), (0, 0), (18, 10), (36, 0)])
         _SPRITES["dron"] = surf
 
-    # Cazador (Interceptor violeta)
+    # Cazador
     ruta_cazador = RUTA_NAVES / "cazador.png"
     if ruta_cazador.exists():
         img_cazador = pygame.image.load(str(ruta_cazador)).convert_alpha()
@@ -70,7 +70,7 @@ def inicializar_assets() -> None:
         pygame.draw.polygon(surf, pygame.Color("darkviolet"), [(19, 38), (0, 6), (19, 14), (38, 6)])
         _SPRITES["cazador"] = surf
 
-    # Nodriza (Crucero Dreadnought Acorazado con núcleo de plasma solar)
+    # Nodriza
     ruta_nodriza = RUTA_NAVES / "nodriza.png"
     if ruta_nodriza.exists():
         img_nodriza = pygame.image.load(str(ruta_nodriza)).convert_alpha()
@@ -81,7 +81,7 @@ def inicializar_assets() -> None:
         pygame.draw.circle(surf, pygame.Color("orangered"), (28, 20), 8)
         _SPRITES["nodriza"] = surf
 
-    # Proyectil Bola de Energía de Plasma (Nave Nodriza)
+    # Proyectil Bola de Energía
     ruta_bola = RUTA_NAVES / "bola_energia.png"
     if ruta_bola.exists():
         img_bola = pygame.image.load(str(ruta_bola)).convert_alpha()
@@ -93,11 +93,11 @@ def inicializar_assets() -> None:
         pygame.draw.circle(surf_bola, pygame.Color("white"), (8, 8), 2)
         _SPRITES["bola_energia"] = surf_bola
 
-    # 4. Cargar Animación del Propulsor (thruster.gif)
+    # 4. Cargar Animación del Propulsor
     ruta_thruster = RUTA_NAVES / "thruster.gif"
     if ruta_thruster.exists():
         anim_raw = pygame.image.load_animation(str(ruta_thruster))
-        # Escala 3x (24x24) para alinear perfectamente con el ancho de la tobera de la nave
+        # Escala 3x (24x24)
         _ANIMACIONES["thruster"] = [
             (pygame.transform.scale(surf, (24, 24)), dur)
             for surf, dur in anim_raw
@@ -116,7 +116,7 @@ def obtener_animacion(clave: str) -> list[tuple[pygame.Surface, float]]:
     return _ANIMACIONES.get(clave, [])
 
 def obtener_fuente(tamano: int) -> pygame.font.Font:
-    """Devuelve la fuente pixel art Press Start 2P con fallback seguro."""
+    """Devuelve la fuente pixel art Press Start 2P."""
     if tamano in _FUENTES:
         return _FUENTES[tamano]
 

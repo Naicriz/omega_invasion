@@ -28,7 +28,7 @@ class Propulsor(pygame.sprite.Sprite):
         self.actualizar_posicion()
 
     def actualizar_posicion(self) -> None:
-        """Ubica el propulsor centrado justo debajo de la tobera de la nave."""
+        """Ubica el propulsor justo debajo de la nave."""
         if self.nave and hasattr(self.nave, "rect"):
             self.rect.midtop = (self.nave.rect.centerx, self.nave.rect.bottom - 4)
 
@@ -50,13 +50,13 @@ class Propulsor(pygame.sprite.Sprite):
 
 
 class EscudoVisual(pygame.sprite.Sprite):
-    """Burbuja de energía pixelada que envuelve a la nave cuando el escudo está activo."""
+    """Burbuja que envuelve a la nave cuando el escudo está activo."""
 
     def __init__(self, nave: "Jugador", *grupos):
         super().__init__(*grupos)
         self.nave = nave
-        self.tamano_baja_res = 24  # Rejilla pixel art 24x24
-        self.escala = 3             # Escalado 3x a 72x72 píxeles
+        self.tamano_baja_res = 24
+        self.escala = 3
         self.tamano_final = self.tamano_baja_res * self.escala
         self.image = pygame.Surface((self.tamano_final, self.tamano_final), pygame.SRCALPHA)
         self.rect = self.image.get_rect()
@@ -79,7 +79,7 @@ class EscudoVisual(pygame.sprite.Sprite):
             return
 
         tiempo = pygame.time.get_ticks()
-        # Generar superficie pixel art de baja resolución (24x24)
+        # Generar superficie 24px x 24px
         surf_low = pygame.Surface((self.tamano_baja_res, self.tamano_baja_res), pygame.SRCALPHA)
         centro = 11.5
         radio_externo = 10.5 + 0.5 * math.sin(tiempo * 0.008)
@@ -114,17 +114,16 @@ class EscudoVisual(pygame.sprite.Sprite):
 
 class Jugador(NaveBase):
     def __init__(self, eje_x: float, eje_y: float, velocidad: float, grupo_balas: pygame.sprite.Group, *grupos: tuple):
-        # 1. Instanciar el propulsor en los grupos primero para que se dibuje por debajo de la nave
-        self.propulsor = Propulsor(self, *grupos)
-        # 2. Inicia con 5 puntos de vida, la velocidad indicada y cadencia de 400ms.
+        self.propulsor = Propulsor(self, *grupos) # Instanciar primero el propulsor
+        # Inicia con 5 puntos de vida,velocidad inicial y cadencia de 400ms.
         super().__init__(eje_x, eje_y, 5, velocidad, 400, *grupos)
-        self.grupo_balas = grupo_balas # Grupo donde se guardaran las balas creadas por el jugador
+        self.grupo_balas = grupo_balas # Se guardaran las balas creadas por el jugador
         self.image_base = obtener_sprite("jugador") # Sprite base sin rotar
         self.image = self.image_base.copy()
         self.rect = self.image.get_rect(center=(eje_x, eje_y)) # Obtener el rectángulo de la nave
         self.propulsor.actualizar_posicion()
-        # 3. Instanciar la burbuja visual del escudo en los grupos (se dibuja encima del chasis)
-        self.escudo_visual = EscudoVisual(self, *grupos)
+        a
+        self.escudo_visual = EscudoVisual(self, *grupos) # Instanciar burbuja visual del escudo en los grupos
 
         # --- Efectos visuales de movimiento ---
         self.angulo_inclinacion = 0.0
@@ -173,7 +172,7 @@ class Jugador(NaveBase):
             self.rect.clamp_ip(superficie.get_rect())
             self.pos = pygame.math.Vector2(self.rect.center)
 
-        # Efecto visual de inclinación lateral (Banking)
+        # Efecto visual de inclinación lateral
         target_angulo = 0.0
         if direccion.x < 0:
             target_angulo = 12.0  # Se inclina a la izquierda
@@ -182,18 +181,18 @@ class Jugador(NaveBase):
 
         self.angulo_inclinacion += (target_angulo - self.angulo_inclinacion) * 0.35
         if abs(self.angulo_inclinacion) < 0.3:
-            self.angulo_inclinacion = 0.0
+            self.angulo_inclinacion = 0.0 # Si la inclinación es muy pequeña, se pone a 0
 
         centro_prev = self.rect.center
         if self.angulo_inclinacion != 0.0:
-            self.image = pygame.transform.rotate(self.image_base, self.angulo_inclinacion)
+            self.image = pygame.transform.rotate(self.image_base, self.angulo_inclinacion) # Rotar la imagen
         else:
-            self.image = self.image_base
+            self.image = self.image_base # Si no hay inclinación, se usa la imagen original
         self.rect = self.image.get_rect(center=centro_prev)
 
         # Emisión de estela del motor de propulsión
         self.contador_estela += 1
-        if self.contador_estela % 2 == 0 and self.groups():
+        if self.contador_estela % 2 == 0 and self.groups(): # Si el contador es par y el jugador está en un grupo
             grupo_sprites = self.groups()[0]
             ParticulaEstela(
                 self.rect.centerx + random.uniform(-3, 3),
@@ -248,7 +247,7 @@ class Jugador(NaveBase):
             self.nivel += 1
             # Cada nivel pide un 50% más de XP que el anterior
             self.exp_siguiente_nivel = int(self.exp_siguiente_nivel * 1.5)
-            return True  # ¡Subió de nivel!
+            return True
         return False
 
     def nivel_de_mejora(self, id_mejora: str) -> int:
@@ -331,7 +330,7 @@ class Jugador(NaveBase):
         # Sonido retro de láser
         reproducir_sonido("laser_jugador", volumen=0.15)
 
-        # DISPARO FRONTAL VERTICAL (Básico + Mejoras de Ráfaga)
+        # DISPARO FRONTAL VERTICAL
         color_frontal = pygame.Color("cyan")
         match self.nivel_canon:
             case 1:  # 1 bala central
@@ -349,26 +348,27 @@ class Jugador(NaveBase):
                 Bala(self.rect.right - 6, self.rect.top, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
                 Bala(self.rect.centerx, self.rect.top - 20, 0.0, -12.0, dano, color_frontal, sprite_bala, grupo_balas, grupo_global)
 
-        # CAÑÓN OMNIDIRECCIONAL (Comienza con 2 direcciones y añade 2 por nivel hasta 8)
+        # CAÑÓN OMNIDIRECCIONAL
         if self.nivel_canon_omni > 0:
-            reproducir_sonido("laser_omni", volumen=0.15)
+            reproducir_sonido("laser_omni", volumen=0.10)
             vel_omni = 9.0
-            diag = 6.36  # 9 / sqrt(2) para velocidad consistente
+            diag = 6.36  # 9 / raizcuadrada(2) para velocidad consistente
             color_omni = pygame.Color("aquamarine")
             
             direcciones = []
-            # Nivel 1 (2 direcciones): Laterales (Izquierda y Derecha)
+            # Nivel 1
             if self.nivel_canon_omni >= 1:
                 direcciones.extend([(-vel_omni, 0.0), (vel_omni, 0.0)])
-            # Nivel 2 (4 direcciones): Se suman Arriba y Abajo
+            # Nivel 2
             if self.nivel_canon_omni >= 2:
                 direcciones.extend([(0.0, -vel_omni), (0.0, vel_omni)])
-            # Nivel 3 (6 direcciones): Se suman Diagonales frontales (Arriba-Izq y Arriba-Der)
+            # Nivel 3
             if self.nivel_canon_omni >= 3:
                 direcciones.extend([(-diag, -diag), (diag, -diag)])
-            # Nivel 4 (8 direcciones): Se completan las Diagonales traseras (Abajo-Izq y Abajo-Der)
+            # Nivel 4
             if self.nivel_canon_omni >= 4:
                 direcciones.extend([(-diag, diag), (diag, diag)])
 
+            # Dispara las balas en las direcciones correspondientes.
             for vx, vy in direcciones:
                 Bala(self.rect.centerx, self.rect.centery, vx, vy, dano * 0.8, color_omni, sprite_omni, grupo_balas, grupo_global)

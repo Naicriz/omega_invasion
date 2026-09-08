@@ -213,7 +213,7 @@ class Juego:
         ahora = pygame.time.get_ticks()
         segundos_jugados = self.segundos_jugados
 
-        # El intervalo se reduce con el tiempo y el nivel (mínimo 280ms para no saturar la CPU)
+        # El intervalo se reduce con el tiempo y el nivel (mínimo 400ms para no saturar la CPU)
         # Empieza en 900ms y va bajando gradualmente
         intervalo_actual = max(400, 900 - (segundos_jugados * 2) - (self.jugador.nivel * 40))
 
@@ -221,17 +221,17 @@ class Juego:
             self.ultimo_spawn_enemigo = ahora
 
             # Cantidad de enemigos por tanda según tiempo y nivel:
-            if segundos_jugados > 90 or self.jugador.nivel >= 15:
+            if segundos_jugados > 160 or self.jugador.nivel >= 10:
                 cantidad = random.randint(1, 3)
-            elif segundos_jugados > 40 or self.jugador.nivel >= 6:
+            elif segundos_jugados > 60 or self.jugador.nivel >= 6:
                 cantidad = random.randint(1, 2)
             else:
                 cantidad = 1
 
             # Probabilidades dinámicas: a más tiempo, más Cazadores y Nodrizas
-            peso_dron = max(15, 60 - segundos_jugados // 4)
-            peso_cazador = min(25, 25 + segundos_jugados // 6)
-            peso_nodriza = min(15, 15 + segundos_jugados // 8)
+            peso_dron = max(40, 10 - segundos_jugados // 4)
+            peso_cazador = min(40, 8 + segundos_jugados // 6)
+            peso_nodriza = min(35, 4 + segundos_jugados // 8)
 
             # Genera la tanda de enemigos
             for _ in range(cantidad):

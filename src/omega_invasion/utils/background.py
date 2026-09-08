@@ -58,7 +58,7 @@ class EstrellaFugaz:
 
 
 class FondoEstrellas:
-    """Fondo espacial con múltiples capas en paralaje que genera sensación de viaje a gran velocidad."""
+    """Fondo espacial con múltiples capas en paralaje"""
 
     def __init__(self, ancho: int = settings.ANCHO_PANTALLA, alto: int = settings.ALTO_PANTALLA):
         self.ancho = ancho
@@ -67,7 +67,7 @@ class FondoEstrellas:
         self.estrella_fugaz = EstrellaFugaz()
         self.tiempo_proxima_fugaz = random.randint(180, 360)
 
-        # Capa 0: Lejana (Fondo profundo, estrellas tenues y lentas)
+        # Capa 0: Lejana
         for _ in range(55):
             x = random.uniform(0, self.ancho)
             y = random.uniform(0, self.alto)
@@ -79,7 +79,7 @@ class FondoEstrellas:
             ])
             self.estrellas.append(Estrella(x, y, vel, 1, color, 0))
 
-        # Capa 1: Media (Estrellas azuladas/cian de tamaño medio y velocidad intermedia)
+        # Capa 1: Media
         for _ in range(30):
             x = random.uniform(0, self.ancho)
             y = random.uniform(0, self.alto)
@@ -91,7 +91,7 @@ class FondoEstrellas:
             ])
             self.estrellas.append(Estrella(x, y, vel, 2, color, 1))
 
-        # Capa 2: Cercana (Estrellas rápidas, brillantes, con sensación de proximidad)
+        # Capa 2: Cercana
         for _ in range(16):
             x = random.uniform(0, self.ancho)
             y = random.uniform(0, self.alto)
@@ -107,12 +107,12 @@ class FondoEstrellas:
         """Avanza las estrellas hacia abajo creando el desplazamiento estelar."""
         for e in self.estrellas:
             e.y += e.velocidad
-            # Ciclo infinito envolvente al superar el borde inferior
+            # Ciclo infinito
             if e.y >= self.alto:
                 e.y = random.uniform(-10, 0)
                 e.x = random.uniform(0, self.ancho)
 
-        # Manejo de estrellas fugaces periódicas
+        # Manejo de estrellas fugaces
         self.tiempo_proxima_fugaz -= 1
         if self.tiempo_proxima_fugaz <= 0 and not self.estrella_fugaz.activa:
             self.estrella_fugaz.lanzar()

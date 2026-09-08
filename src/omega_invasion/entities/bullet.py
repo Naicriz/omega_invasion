@@ -48,7 +48,7 @@ class BolaEnergia(Bala):
         self.pos += self.vel
         self.rect.center = (round(self.pos.x), round(self.pos.y))
 
-        # Rotación continua del núcleo de plasma
+        # Rotación núcleo plasma
         self.angulo_rotacion = (self.angulo_rotacion + self.velocidad_rotacion) % 360
         centro_actual = self.rect.center
         self.image = pygame.transform.rotate(self.sprite_base, self.angulo_rotacion)

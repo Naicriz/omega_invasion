@@ -24,7 +24,7 @@ class DronEnemigo(NaveBase):
         self.tiempo_vivo = random.uniform(0, 100)
         self.contador_estela = random.randint(0, 3)
 
-        # Gráfico: Sprite pixel art de caza ágil
+        # Sprite dron
         self.image_base = obtener_sprite("dron")
         self.image = self.image_base.copy()
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
@@ -82,13 +82,13 @@ class CazadorEnemigo(NaveBase):
         self.angulo_inclinacion = 0.0
         self.contador_estela = random.randint(0, 3)
 
-        # Gráfico: Sprite pixel art de interceptor violeta
+        # Sprite cazador
         self.image_base = obtener_sprite("cazador")
         self.image = self.image_base.copy()
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
 
     def update(self) -> None:
-        # Movimiento: desciende mientras persigue la coordenada X del jugador
+        # Desciende mientras persigue la coordenada X del jugador
         self.pos.y += self.vel
         target_tilt = 0.0
 
@@ -144,7 +144,7 @@ class NodrizaEnemiga(NaveBase):
         self.exp_otorgada = 75
         self.contador_estela = 0
 
-        # Gráfico: Sprite pixel art de crucero acorazado
+        # Sprite nodriza
         self.image = obtener_sprite("nodriza").copy()
         self.rect = self.image.get_rect(center=(round(eje_x), round(eje_y)))
 
@@ -152,7 +152,7 @@ class NodrizaEnemiga(NaveBase):
         self.pos.y += self.vel
         self.rect.center = (round(self.pos.x), round(self.pos.y))
 
-        # Estela doble de motores de plasma pesados
+        # Estela doble de motores
         self.contador_estela += 1
         if self.contador_estela % 2 == 0:
             ParticulaEstela(
@@ -176,14 +176,14 @@ class NodrizaEnemiga(NaveBase):
                 self.grupo_sprites
             )
 
-        # Patrón de disparo en abanico (salva triple de bolas de energía)
+        # Disparo de bolas
         if self.puede_disparar():
             reproducir_sonido("laser_enemigo", volumen=0.15)
-            # 1. Cañón izquierdo en ángulo diagonal
+            # Cañón izquierdo
             BolaEnergia(self.rect.left + 6, self.rect.bottom - 4, -2.2, 5.0, 1, self.grupo_balas, self.grupo_sprites)
-            # 2. Reactor central frontal hacia abajo
+            # Cañón central
             BolaEnergia(self.rect.centerx, self.rect.bottom, 0.0, 5.8, 1, self.grupo_balas, self.grupo_sprites)
-            # 3. Cañón derecho en ángulo diagonal
+            # Cañón derecho
             BolaEnergia(self.rect.right - 6, self.rect.bottom - 4, 2.2, 5.0, 1, self.grupo_balas, self.grupo_sprites)
 
         superficie = pygame.display.get_surface()
