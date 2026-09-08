@@ -1,109 +1,69 @@
 # Omega Invasion 🛸
 
-Un videojuego arcade espacial 2D desarrollado en **Python** utilizando **Pygame Community Edition (pygame-ce)** y gestionado con **Poetry**.
+Un videojuego arcade espacial 2D desarrollado en **Python** con **Pygame Community Edition (pygame-ce)** y gestionado con **Poetry**.
+
+El proyecto fue desarrollado para la asignatura de Fundamentos de Data Science de la Universidad Tecnológica Metropolitana (UTEM).
 
 ---
 
-## 📋 Requisitos Previos
+## Requisitos
 
-- **Python**: `>= 3.12` (compatible con 3.14)
-- **Poetry**: Para gestión de dependencias y entornos virtuales.
+- **Python**: `>= 3.12`
+- **Poetry**: Para gestión de dependencias y entorno virtual
 
 ---
 
-## 🚀 Instalación y Configuración
+## 🚀 Instalación
 
-1. **Clonar el repositorio o ingresar al directorio del proyecto**:
+1. Clona el repositorio y accede a la carpeta:
    ```bash
+   git clone git@github.com:Naicriz/omega_invasion.git
    cd omega_invasion
    ```
 
-2. **Instalar dependencias del proyecto**:
+2. Instala las dependencias:
    ```bash
    poetry install
    ```
 
 ---
 
-## 🎮 Ejecución del Juego
+## Cómo Jugar
 
-Puedes iniciar el juego directamente mediante el comando registrado en Poetry:
+Inicia el juego ejecutando:
 
 ```bash
 poetry run omega-invasion
 ```
 
-O también ejecutando el módulo principal de Python:
+*(También puedes iniciar con: `poetry run python -m omega_invasion.main`)*
 
-```bash
-poetry run python -m omega_invasion.main
-```
+### Controles
 
-### Controles Básicos (Por defecto)
-- **ESC**: Salir del juego / cerrar ventana.
+| Acción | Teclas |
+|---|---|
+| **Movimiento** | `W`, `A`, `S`, `D` o Flechas de dirección |
+| **Disparo continuo** | `Barra Espaciadora` (mantener presionada) |
+| **Seleccionar mejora** | Teclas `1`, `2`, `3` o Clic izquierdo sobre la carta |
+| **Reiniciar partida** | `Enter`, `R` o Clic en "Reiniciar" (al morir) |
+| **Salir del juego** | `ESC` o `Q` en pantalla de Game Over |
 
 ---
 
-## 🧪 Pruebas Automatizadas (Testing)
+## Pruebas Automatizadas (Tests)
 
-El proyecto utiliza **pytest** configurado en modo *headless* (sin abrir ventanas físicas), lo que permite ejecutar pruebas ultrarrápidas y aptas para entornos de integración continua (CI).
-
-### Comandos de prueba
+El proyecto cuenta con pruebas con la libreria **pytest** ejecutadas en modo *headless* (sin abrir ventanas):
 
 ```bash
-# Ejecutar toda la suite de pruebas
+# Ejecutar todas las pruebas
 poetry run pytest
 
-# Ejecutar en modo detallado (verbose)
+# Ejecutar con salida detallada
 poetry run pytest -v
-
-# Ejecutar un archivo de prueba específico
-poetry run pytest tests/test_ajustes.py
-```
-
-### Ejemplo para nuevas pruebas de entidades
-
-Al crear nuevas entidades (por ejemplo `src/omega_invasion/entities/jugador.py`), puedes agregar pruebas de lógica en `tests/`:
-
-```python
-# tests/test_jugador.py
-def test_jugador_no_puede_salir_del_borde_izquierdo():
-    jugador = Jugador(x=0, y=500)
-    jugador.mover_izquierda()
-    assert jugador.rect.x >= 0
 ```
 
 ---
 
-## 📂 Estructura del Proyecto
+## Autor
 
-El código sigue el estándar de empaquetado moderno **`src-layout`**:
-
-```text
-omega_invasion/
-├── assets/                       # Recursos multimedia (imágenes, sonidos, fuentes)
-│   ├── fonts/
-│   ├── images/
-│   └── sounds/
-├── src/
-│   └── omega_invasion/           # Paquete principal del juego
-│       ├── __init__.py
-│       ├── main.py               # Punto de entrada (función principal)
-│       ├── settings.py           # Constantes y configuración global
-│       ├── game.py               # Clase 'Juego' (loop principal, eventos, render)
-│       ├── entities/             # Clases del juego (jugador, enemigos, balas)
-│       ├── scenes/               # Escenas o estados (menú, juego, fin)
-│       └── utils/                # Funciones auxiliares y cargadores de recursos
-├── tests/                        # Suite de pruebas unitarias
-│   ├── conftest.py               # Configuración headless de Pygame para pytest
-│   ├── test_ajustes.py           # Pruebas de configuración
-│   └── test_juego.py             # Pruebas del ciclo de juego
-├── pyproject.toml                # Definición de dependencias y scripts con Poetry
-└── README.md
-```
-
----
-
-## 👤 Autor
-
-- **Ian Salazar** ([isalazarjara@gmail.com](mailto:isalazarjara@gmail.com))
+- **Ian Salazar** ([isalazar@utem.cl](mailto:[salazar@utem.cl]))
