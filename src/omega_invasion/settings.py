@@ -1,14 +1,10 @@
 import pygame
 
-SCREEN_WIDTH: int = 800
-SCREEN_HEIGHT: int = 800
+# --- Configuración de la pantalla ---
+ANCHO_PANTALLA: int = 800
+ALTO_PANTALLA: int = 800
 FPS: int = 60
-BG_COLOR: pygame.Color = pygame.Color("gray8")
-
-# Constantes en español
-ANCHO_PANTALLA: int = SCREEN_WIDTH
-ALTO_PANTALLA: int = SCREEN_HEIGHT
-COLOR_FONDO: pygame.Color = BG_COLOR
+COLOR_FONDO: pygame.Color = pygame.Color("gray8")
 
 # --- Stats iniciales ---
 HP_MAX: float = 5.0
