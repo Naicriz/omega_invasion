@@ -1,6 +1,8 @@
-import math
 import random
 import pygame
+
+from omega_invasion.utils.constants import TAU
+from omega_invasion.utils import matematica as mate
 
 
 class ParticulaEstela(pygame.sprite.Sprite):
@@ -162,10 +164,10 @@ def crear_explosion(pos: tuple[float, float], tipo_nave: str, grupo_sprites: pyg
 
     color_fin = pygame.Color(40, 40, 40)
     for _ in range(num_particulas):
-        angulo = random.uniform(0, math.tau)
+        angulo = random.uniform(0, TAU)
         velocidad = random.uniform(1.5, vel_max)
-        vx = math.cos(angulo) * velocidad
-        vy = math.sin(angulo) * velocidad
+        vx = mate.coseno(angulo) * velocidad
+        vy = mate.seno(angulo) * velocidad
         col = random.choice(colores)
         tam = random.choice([3, 4, 5])
         vida = random.randint(14, 26)

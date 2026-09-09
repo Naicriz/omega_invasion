@@ -1,7 +1,11 @@
 import random
 import pygame
+
 from omega_invasion import settings
 
+COLORES_LEJANOS = [pygame.Color('midnightblue'), pygame.Color('darkslateblue'), pygame.Color('navy')]
+COLORES_MEDIOS = [pygame.Color('royalblue'), pygame.Color('cornflowerblue'), pygame.Color('skyblue')]
+COLORES_CERCANOS = [pygame.Color('white'), pygame.Color('azure'), pygame.Color('aliceblue')]  # 'white' se repite para mayor densidad
 
 class Estrella:
     """Representa una estrella individual en el campo estelar con velocidad y profundidad."""
@@ -72,11 +76,7 @@ class FondoEstrellas:
             x = random.uniform(0, self.ancho)
             y = random.uniform(0, self.alto)
             vel = random.uniform(0.5, 0.9)
-            color = random.choice([
-                pygame.Color(100, 120, 160),
-                pygame.Color(120, 140, 180),
-                pygame.Color(80, 100, 140)
-            ])
+            color = random.choice(COLORES_LEJANOS)
             self.estrellas.append(Estrella(x, y, vel, 1, color, 0))
 
         # Capa 1: Media
@@ -84,11 +84,7 @@ class FondoEstrellas:
             x = random.uniform(0, self.ancho)
             y = random.uniform(0, self.alto)
             vel = random.uniform(1.3, 2.0)
-            color = random.choice([
-                pygame.Color(160, 200, 240),
-                pygame.Color(190, 230, 255),
-                pygame.Color(140, 180, 220)
-            ])
+            color = random.choice(COLORES_MEDIOS)
             self.estrellas.append(Estrella(x, y, vel, 2, color, 1))
 
         # Capa 2: Cercana
@@ -96,11 +92,7 @@ class FondoEstrellas:
             x = random.uniform(0, self.ancho)
             y = random.uniform(0, self.alto)
             vel = random.uniform(2.8, 3.8)
-            color = random.choice([
-                pygame.Color(255, 255, 255),
-                pygame.Color(230, 250, 255),
-                pygame.Color(210, 245, 255)
-            ])
+            color = random.choice(COLORES_CERCANOS)
             self.estrellas.append(Estrella(x, y, vel, 3, color, 2))
 
     def actualizar(self) -> None:

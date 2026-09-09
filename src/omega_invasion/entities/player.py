@@ -1,12 +1,12 @@
+import random
+import pygame
+
+from omega_invasion.utils import matematica as mate
 from omega_invasion.settings import NVL_DANO, NVL_CADENCIA, NVL_CANON_OMNI, NVL_CANON, EXP_ACTUAL, NVL_ACTUAL, EXP_SIGUIENTE, ESCUDO_ACTUAL, ESCUDO_MAX, NVL_VELOCIDAD
 from omega_invasion.entities.bullet import Bala
 from omega_invasion.entities.base import NaveBase
 from omega_invasion.entities.effects import ParticulaEstela
 from omega_invasion.utils.assets import obtener_sprite, obtener_animacion, reproducir_sonido
-
-import math
-import random
-import pygame
 
 
 class Propulsor(pygame.sprite.Sprite):
@@ -82,12 +82,12 @@ class EscudoVisual(pygame.sprite.Sprite):
         # Generar superficie 24px x 24px
         surf_low = pygame.Surface((self.tamano_baja_res, self.tamano_baja_res), pygame.SRCALPHA)
         centro = 11.5
-        radio_externo = 10.5 + 0.5 * math.sin(tiempo * 0.008)
+        radio_externo = 10.5 + 0.5 * mate.seno(tiempo * 0.008)
         radio_interno = radio_externo - 1.8
 
         color_borde = pygame.Color("cyan")
         color_borde_brillo = pygame.Color("white")
-        alfa_interior = int(50 + 20 * math.sin(tiempo * 0.006))
+        alfa_interior = int(50 + 20 * mate.seno(tiempo * 0.006))
         color_interior = pygame.Color(0, 200, 255, alfa_interior)
 
         fase_chispa = int((tiempo // 120) % 8)
@@ -96,7 +96,7 @@ class EscudoVisual(pygame.sprite.Sprite):
             dy = y - centro
             for x in range(self.tamano_baja_res):
                 dx = x - centro
-                dist = math.hypot(dx, dy)
+                dist = mate.hipotenusa(dx, dy)
                 if radio_interno <= dist <= radio_externo:
                     # Borde pixel art con destellos periódicos
                     if (x + y + fase_chispa) % 5 == 0:

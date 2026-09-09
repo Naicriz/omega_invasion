@@ -1,12 +1,11 @@
-# src/omega_invasion/entities/enemy.py
-import math
 import random
 import pygame
+
+from omega_invasion.utils import matematica as mate
 from omega_invasion.entities.base import NaveBase
 from omega_invasion.entities.bullet import Bala, BolaEnergia
 from omega_invasion.entities.effects import ParticulaEstela
 from omega_invasion.utils.assets import obtener_sprite, reproducir_sonido
-
 
 
 class DronEnemigo(NaveBase):
@@ -32,10 +31,10 @@ class DronEnemigo(NaveBase):
     def update(self) -> None:
         self.tiempo_vivo += 1
         self.pos.y += self.vel
-        self.pos.x = self.centro_x + math.sin(self.tiempo_vivo * self.frecuencia) * self.amplitud_oscilacion
+        self.pos.x = self.centro_x + mate.seno(self.tiempo_vivo * self.frecuencia) * self.amplitud_oscilacion
 
         # Inclinación visual según la dirección del vuelo en zigzag
-        vx = math.cos(self.tiempo_vivo * self.frecuencia) * self.amplitud_oscilacion * self.frecuencia
+        vx = mate.coseno(self.tiempo_vivo * self.frecuencia) * self.amplitud_oscilacion * self.frecuencia
         angulo_tilt = max(-14.0, min(14.0, -vx * 4.5))
 
         centro_prev = (round(self.pos.x), round(self.pos.y))

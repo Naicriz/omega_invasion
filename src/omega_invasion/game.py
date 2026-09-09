@@ -121,7 +121,7 @@ class Juego:
         self.manejar_colisiones()
 
     def dibujar(self) -> None:
-        """Renderiza los elementos gráficos en la pantalla con fondo estelar y soporte para sacudida."""
+        """Renderiza los elementos gráficos en la pantalla con background y shake."""
         if self.shake_intensidad > 0.1:
             max_offset = max(1, int(self.shake_intensidad))
             offset_x = random.randint(-max_offset, max_offset)

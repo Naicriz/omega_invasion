@@ -1,5 +1,7 @@
 import pygame
-import math
+
+from omega_invasion.utils import matematica as mate
+
 
 class Bala(pygame.sprite.Sprite):
     def __init__(self, eje_x: float, eje_y: float, vel_x: float, vel_y: float, dano: float = 1, color: pygame.Color | tuple | str = "cyan", sprite: pygame.Surface | None = None, *grupos):
@@ -11,8 +13,8 @@ class Bala(pygame.sprite.Sprite):
         
         if sprite is not None:
             # Rotar el sprite hacia la dirección de vuelo
-            if vel_x != 0 or vel_y != 0:
-                angulo = math.degrees(math.atan2(-vel_y, vel_x)) - 90
+            if vel_x != 0 or vel_y != 0: 
+                angulo = mate.radianes_a_grados(mate.atan2(-vel_y, vel_x)) - 90
                 self.image = pygame.transform.rotate(sprite, angulo)
             else:
                 self.image = sprite.copy()
